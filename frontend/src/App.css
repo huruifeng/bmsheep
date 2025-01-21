@@ -1,0 +1,125 @@
+/* TopBanner */
+.top-banner {
+  background-color: #e3f2fd;
+  height: 120px;
+}
+
+.top-banner-toolbar {
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.logo-container {
+  max-height: 120px;
+}
+
+.logo {
+  max-height: 120px;
+}
+
+.nav-container {
+  display: flex;
+  gap: 20px;
+}
+
+
+/* NavBar*/
+.nav-bar {
+  background-color: #e3f2fd;
+  margin-bottom: 10px;
+}
+
+.nav-toolbar {
+  width: 60%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+/*Foote*/
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #3f51b5;
+  padding: 10px;
+  color: white;
+}
+
+.footer-text {
+  font-size: 14px;
+}
+
+.footer-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+/*Home*/
+.home-container {
+  width: 60%;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.card-group {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-media {
+  object-fit: cover; /* Ensures the image covers the space properly */
+}
+
+.card-content {
+ flex:1 1 auto;
+  padding: 1rem 1rem;
+}
+
+.card-content .MuiTypography-root {
+  margin-bottom: 10px;
+}
+
+/*VarQuery*/
+.varquery-container {
+  width: 60%;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+.varquery-container label {
+  ont-weight: bold;
+  color: #0d6efd;
+}
+
+/*VarIdent*/
+.varident-container {
+  width: 60%;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+.varident-container label {
+  ont-weight: bold;
+  color: #0d6efd;
+}
+
+.chipdesign-container {
+  width: 60%;
+  margin: 0 auto;
+  line-height: 1.5;
+}
