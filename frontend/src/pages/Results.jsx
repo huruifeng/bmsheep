@@ -5,8 +5,7 @@ import {Spinner} from "react-bootstrap";
 const Results = () => {
   const [jobs, setJobs] = useState([]);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
+  const fetchJobs = async () => {
       try {
         const userData = { username: 'all' };
         const data = await check_jobs_post(userData); // Replace with your backend endpoin
@@ -17,6 +16,16 @@ const Results = () => {
       }
     };
 
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     await fetchJobs();
+  //   }, 5000); // Poll every 5 seconds
+  //   return () => clearInterval(interval);
+  // }, []);
+
+
+
+  useEffect(() => {
     fetchJobs();
   }, []);
 

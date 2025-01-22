@@ -17,7 +17,7 @@ def run_varidnt(work_dir,vcf_file):
     job_info["error"] = "NA"
     job_info["end_time"] = "NA"
     try:
-        subprocess.run(["python", "jobs/test.py"])
+        subprocess.run(["python", "jobs/test.py"], shell=True)
 
         job_info["end_time"] = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
         job_info["status"] = "Done"

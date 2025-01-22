@@ -52,44 +52,52 @@ const VarIdent = () => {
     }
 
     // Perform form submission logic here
-    setModalMessage("Uploading file...");
     setIsSubmitting(true);
+
+    setModalMessage("Uploading file...");
     setIsUploading(true);
-    // 1. Send the file to the backend
+
     const formData = new FormData();
     formData.append("job_id", jobIdPre+"_"+jobIdTxt);
     formData.append("input_vcf", file);
     try {
-      const data = await upload_file_post(formData);
-      if (data.success) {
-        setModalMessage("File uploaded successfully! \n Starting job...");
-        setIsUploading(false)
-      }else{
-          setModalMessage("An error occurred while uploading the file.");
-          setIsUploading(false)
-      }
-    } catch (error) {
-      alert('An error occurred while uploading the file.', error);
-    }
+         // 1. Upload the file
+         const uploadResponse = await upload_file_post(formData);
+         if (!uploadResponse.success) {
+            setModalMessage("An error occurred while uploading the file.");
+            setIsUploading(false)
+            setIsSubmitting(false)
+            return ;
+         }
 
-    // 2. Start the job
-     const newFormData = new FormData();
-    newFormData.append("job_id", jobIdPre+"_"+jobIdTxt);
-    newFormData.append("input_vcf", file.name);
-     try {
-       varident_post(newFormData);
-      // Countdown logic
-      const countdownInterval = setInterval(() => {
+         setIsUploading(false)
+
+        // 2. Start the job
+        setModalMessage("File uploaded successfully! \n Starting job...");
+        // Start the job (fire-and-forget approach)
+         const newFormData = new FormData();
+         newFormData.append("job_id", jobIdPre+"_"+jobIdTxt);
+         newFormData.append("input_vcf", file.name);
+        varident_post(newFormData).catch((err) => {
+          console.error("Error starting the job:", err); // Handle errors without blocking navigation
+        });
+
+        const countdownInterval = setInterval(() => {
         setSeconds((prev) => {
           if (prev === 1) {
             clearInterval(countdownInterval);
-            navigate('/results'); // Navigate to results page
           }
           return prev - 1
         });
       }, 1000);
+
+        // 3. Navigate to the results page
+        setTimeout(() => {
+          navigate(`/results`);
+        }, 5000);
+
     } catch (error) {
-      alert('An error occurred while starting the job.', error);
+      alert('An error occurred while uploading the file.', error);
     }
   };
 
