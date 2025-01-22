@@ -2,7 +2,7 @@ import '/src/assets/bootstrap/css/bootstrap.min.css';
 import {useEffect, useState} from 'react';
 import { Modal, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // For navigation
-import { varident_post } from '../api';
+import {upload_file_post, varident_post} from '../api';
 
 
 const VarIdent = () => {
@@ -12,6 +12,10 @@ const VarIdent = () => {
   const [file, setFile] = useState(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [modalMessage, setModalMessage] = useState(false);
+  const [seconds, setSeconds] = useState(10); // Countdown starts at 10 seconds
+
   const navigate = useNavigate();
 
   // Generate a random job ID
@@ -47,22 +51,45 @@ const VarIdent = () => {
       return;
     }
 
+    // Perform form submission logic here
+    setModalMessage("Uploading file...");
+    setIsSubmitting(true);
+    setIsUploading(true);
+    // 1. Send the file to the backend
     const formData = new FormData();
     formData.append("job_id", jobIdPre+"_"+jobIdTxt);
     formData.append("input_vcf", file);
-
-    setIsSubmitting(true);
-
     try {
-      await varident_post(formData);
-      // Wait for 10 seconds before navigating
-      setTimeout(() => {
-        navigate('/results');
-      }, 10000);
+      const data = await upload_file_post(formData);
+      if (data.success) {
+        setModalMessage("File uploaded successfully! <br /> Starting job...");
+        setIsUploading(false)
+      }else{
+          setModalMessage("An error occurred while uploading the file.");
+          setIsUploading(false)
+      }
     } catch (error) {
       alert('An error occurred while uploading the file.', error);
-    } finally {
-      setIsSubmitting(false);
+    }
+
+    // 2. Start the job
+     const newFormData = new FormData();
+    newFormData.append("job_id", jobIdPre+"_"+jobIdTxt);
+    newFormData.append("input_vcf", file.name);
+     try {
+      await varident_post(newFormData);
+      // Countdown logic
+      const countdownInterval = setInterval(() => {
+        setSeconds((prev) => {
+          if (prev === 1) {
+            clearInterval(countdownInterval);
+            navigate('/results'); // Navigate to results page
+          }
+          return prev - 1
+        });
+      }, 1000);
+    } catch (error) {
+      alert('An error occurred while starting the job.', error);
     }
   };
 
@@ -88,11 +115,14 @@ const VarIdent = () => {
 
       {/* Modal */}
       <Modal show={isSubmitting} centered>
+          <Modal.Header closeButton onClick={() => setIsSubmitting(false)}>
+            <Modal.Title>Submitting...</Modal.Title>
+          </Modal.Header>
         <Modal.Body className="text-center">
           <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">Submitting...</span>
           </Spinner>
-          <p className="mt-3">Submitting your job. Please wait...</p>
+          <p className="mt-3">{modalMessage}.<br /> Please wait... { ((isSubmitting) && (!isUploading)) ? seconds + "s" : ""} </p>
         </Modal.Body>
       </Modal>
 

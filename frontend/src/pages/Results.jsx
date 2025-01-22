@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import {check_jobs_post} from "../api.js";
 
 const Results = () => {
   const [jobs, setJobs] = useState([]);
@@ -7,8 +7,9 @@ const Results = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/jobs'); // Replace with your backend endpoint
-        setJobs(response.data.jobs);
+        const userData = { username: 'all' };
+        const data = await check_jobs_post(userData); // Replace with your backend endpoint
+        setJobs(data.jobs);
       } catch (error) {
         console.error('Error fetching jobs:', error);
       }
