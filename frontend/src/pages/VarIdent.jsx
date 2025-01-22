@@ -14,7 +14,7 @@ const VarIdent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [modalMessage, setModalMessage] = useState(false);
-  const [seconds, setSeconds] = useState(10); // Countdown starts at 10 seconds
+  const [seconds, setSeconds] = useState(5); // Countdown starts at 5 seconds
 
   const navigate = useNavigate();
 
@@ -62,7 +62,7 @@ const VarIdent = () => {
     try {
       const data = await upload_file_post(formData);
       if (data.success) {
-        setModalMessage("File uploaded successfully! <br /> Starting job...");
+        setModalMessage("File uploaded successfully! \n Starting job...");
         setIsUploading(false)
       }else{
           setModalMessage("An error occurred while uploading the file.");
@@ -77,7 +77,7 @@ const VarIdent = () => {
     newFormData.append("job_id", jobIdPre+"_"+jobIdTxt);
     newFormData.append("input_vcf", file.name);
      try {
-      await varident_post(newFormData);
+       varident_post(newFormData);
       // Countdown logic
       const countdownInterval = setInterval(() => {
         setSeconds((prev) => {

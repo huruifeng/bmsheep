@@ -40,6 +40,7 @@ export const check_jobs_post = async (userData) => {
             'Content-Type': 'application/json',
         },
     });
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching jobs:", error);
