@@ -1,12 +1,18 @@
 import '/src/assets/bootstrap/css/bootstrap.min.css';
-import { useState, useEffect } from 'react';
-import {varident_post} from "../api.js";
+import {useEffect, useState} from 'react';
+import { Modal, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // For navigation
+import { varident_post } from '../api';
+
 
 const VarIdent = () => {
   const [jobIdPre, setJobIdPre] = useState('');
   const [jobIdTxt, setJobIdTxt] = useState('');
   // const [vcfFiles, setVcfFiles] = useState([]);
   const [file, setFile] = useState(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   // Generate a random job ID
   const generateJobId = () => {
@@ -20,18 +26,24 @@ const VarIdent = () => {
     generateJobId();
   }, []);
 
+
   // Handle file input change
   const handleFileChange = (e) => {
     // setVcfFiles(Array.from(e.target.files));
-     setFile(e.target.files[0]);
-  };
+  const selectedFile = e.target.files[0];
+  if (selectedFile && !/\.(vcf|vcf\.gz)$/i.test(selectedFile.name)) {
+    alert("Invalid file type. Please upload a .vcf or .vcf.gz file.");
+    setFile(null);
+  } else {
+    setFile(selectedFile);
+  }
+};
 
-  // Handle form submission
    // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+   e.preventDefault();
     if (!file) {
-      alert("Please select a VCF file.");
+      alert('Please select a VCF file.');
       return;
     }
 
@@ -39,20 +51,26 @@ const VarIdent = () => {
     formData.append("job_id", jobIdPre+"_"+jobIdTxt);
     formData.append("input_vcf", file);
 
+    setIsSubmitting(true);
+
     try {
-      const response = await varident_post(formData);
-      alert("File uploaded successfully!");
-      console.log(response); // Process response as needed
+      await varident_post(formData);
+      // Wait for 10 seconds before navigating
+      setTimeout(() => {
+        navigate('/results');
+      }, 10000);
     } catch (error) {
-      alert("An error occurred while uploading the file:", error);
+      alert('An error occurred while uploading the file.', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Handle reset
   const handleReset = () => {
-    generateJobId();
-    // setVcfFiles([]);
+     generateJobId();
     setFile(null);
+    document.getElementById("input_vcf").value = ""; // Reset file input
   };
 
   return (
@@ -68,12 +86,23 @@ const VarIdent = () => {
         </div>
       </div>
 
+      {/* Modal */}
+      <Modal show={isSubmitting} centered>
+        <Modal.Body className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p className="mt-3">Submitting your job. Please wait...</p>
+        </Modal.Body>
+      </Modal>
+
+      {/* Form */}
       <div className="row mt-3">
         <div className="col-md-12">
           <h5>参数输入:</h5>
           <hr />
           <form onSubmit={handleSubmit}>
-            <div className="row mb-3">
+            <div className="row mb-3 form-group">
               <label htmlFor="job_name" className="col-sm-2 col-form-label">
                 Job name:
               </label>
@@ -120,6 +149,7 @@ const VarIdent = () => {
                     accept=".vcf,.vcf.gz"
                     // multiple
                     onChange={handleFileChange}
+                    required
                   />
                 </div>
               </div>
@@ -130,15 +160,20 @@ const VarIdent = () => {
               <div className="col-sm-10">
                 <div className="row gy-2 gx-3 align-items-center" id="input_button">
                   <div className="col-auto">
-                    <button type="submit" className="btn btn-primary">
-                      &nbsp;&nbsp;&nbsp;&nbsp;Submit&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
                   </div>
                   <div className="col-auto">
                     <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleReset}
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={handleReset}
+                        disabled={isSubmitting}
                     >
                       &nbsp;&nbsp;&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;
                     </button>
@@ -146,6 +181,8 @@ const VarIdent = () => {
                 </div>
               </div>
             </div>
+
+
           </form>
         </div>
       </div>

@@ -12,6 +12,7 @@ import VarIdent from "./pages/VarIdent.jsx";
 import ChipDesignVCF from "./pages/ChipDesignVCF.jsx";
 import ChipDesignPop from "./pages/ChipDesignPop.jsx";
 import GenImpute from "./pages/GenImpute.jsx";
+import Results from "./pages/Results.jsx";
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/chipdesignvcf" element={<ChipDesignVCF />} />
             <Route path="/chipdesignpop" element={<ChipDesignPop />} />
             <Route path="/genimpute" element={<GenImpute />} />
+            <Route path="/results" element={<Results />} />
         </Routes>
         <Footer />
     </Router>

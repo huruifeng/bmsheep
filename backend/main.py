@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import API
+from routers import API
 app = FastAPI()
 
 app.add_middleware(
@@ -28,3 +28,15 @@ app.include_router(API.router, prefix="/api", tags=["APIs"])
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=3000)
+
+
+# Run FastAPI with uvicorn and --reload: When you run the application using uvicorn, include the --reload flag:
+# uvicorn main:app --reload
+# --main is the name of your Python file (without the .py extension).
+# --app is the name of your FastAPI instance.
+
+# Example Command: If your FastAPI application is in a file named app.py:
+# uvicorn main:app --host 0.0.0.0 --port 3000 --reload
+# --host 0.0.0.0: Makes the app accessible on your local network.
+# --port 3000: Specifies the port number (adjust to your needs).
+# --reload: Enables automatic reload when files are modified.
