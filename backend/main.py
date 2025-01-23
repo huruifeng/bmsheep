@@ -42,3 +42,10 @@ if __name__ == "__main__":
 # --host 0.0.0.0: Makes the app accessible on your local network.
 # --port 3000: Specifies the port number (adjust to your needs).
 # --reload: Enables automatic reload when files are modified.
+
+
+# For production deployments we recommend using gunicorn with the uvicorn worker class.
+# gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
+
+# This starts 4 workers, each capable of handling 2 threads, increasing capacity for concurrent requests.
+# gunicorn -w 4 --threads 2 -k uvicorn.workers.UvicornWorker main:app
