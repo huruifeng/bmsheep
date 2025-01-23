@@ -9,15 +9,11 @@ from functions.utils import zip_files
 tz = pytz.timezone("Asia/Shanghai")
 
 def run_varidnt(work_dir,vcf_file):
-    job_info = {"job_id": work_dir.split("/")[-1]}
-    ## get start time
-    job_info["start_time"] = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
-    job_info["job_type"] = "varidnt"
-    job_info["status"] = "Running"
-    job_info["error"] = "NA"
-    job_info["end_time"] = "NA"
+    print("Running job:", work_dir)
+    job_info = json.load(open(f"{work_dir}/job_info.json"))
     try:
-        subprocess.run(["python", "jobs/test.py"], shell=True)
+        cmd_str = " ".join(["python", "jobs/test.py"])
+        subprocess.run(cmd_str, shell=True)
 
         job_info["end_time"] = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
         job_info["status"] = "Done"

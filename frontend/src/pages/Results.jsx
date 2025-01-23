@@ -16,18 +16,18 @@ const Results = () => {
       }
     };
 
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     await fetchJobs();
-  //   }, 5000); // Poll every 5 seconds
-  //   return () => clearInterval(interval);
-  // }, []);
+   // Fetch jobs when the component mounts
+      useEffect(() => {
+        fetchJobs();
+      }, []);
 
+    // Refresh jobs every 5 seconds。
+    // Stop refreshing when no job is running
+    useEffect(() => {
+      const intervalId = setInterval(fetchJobs, 5000);
+      return () => clearInterval(intervalId);
+    }, [jobs]);
 
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
 
   return (
       <div className="results-container">

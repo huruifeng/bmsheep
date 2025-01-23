@@ -6,7 +6,9 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update with your frontend's URL in production
+    allow_origins=[
+        "*"
+    ],  # Update with your frontend's URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,7 +29,7 @@ app.include_router(API.router, prefix="/api", tags=["APIs"])
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
 # Run FastAPI with uvicorn and --reload: When you run the application using uvicorn, include the --reload flag:

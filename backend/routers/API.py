@@ -1,8 +1,12 @@
 import os
 import json
+from datetime import datetime
+import pytz
+
+tz = pytz.timezone("Asia/Shanghai")
 
 from fastapi import APIRouter
-from fastapi import Request, File, UploadFile, Form
+from fastapi import Request, File, UploadFile, Form, BackgroundTasks
 from fastapi.responses import JSONResponse
 
 from functions.run_script import run_varidnt
@@ -53,7 +57,7 @@ async def upload_file(
 
 
 @router.post("/varident")
-async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...)):
+async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),background_tasks: BackgroundTasks = None):
     print(f"Job ID: {job_id}, vcf file name: {input_vcf}")
     try:
 
@@ -63,8 +67,21 @@ async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...)):
             os.makedirs(work_dir)
         input_vcf = os.path.join(work_dir, input_vcf)
 
+        ## initialize job info
+        job_info = {"job_id": job_id}
+        ## get start time
+        job_info["start_time"] = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
+        job_info["job_type"] = "varidnt"
+        job_info["status"] = "Running"
+        job_info["error"] = "NA"
+        job_info["end_time"] = "NA"
+        with open(f"{work_dir}/job_info.json", "w") as outfile:
+            json.dump(job_info, outfile)
+
         # Process the file
-        run_varidnt(work_dir,input_vcf)
+        # Schedule the script to run in the background
+        background_tasks.add_task(run_varidnt, work_dir, input_vcf)
+        # run_varidnt(work_dir,input_vcf)
 
         # Return success response
         return JSONResponse(
@@ -93,6 +110,8 @@ async def check_jobs_post(request:Request):
     for job_id in os.listdir(job_dir):
         if job_id.startswith('JOB'):
             job_info_path = os.path.join(job_dir, job_id, "job_info.json")
+            if not os.path.exists(job_info_path):
+                continue
             job_info = json.load(open(job_info_path))
             jobs.append(job_info)
         else:

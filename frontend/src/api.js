@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = "http://localhost:3000/api"; // Replace with your backend URL
+// const BASE_URL = "http://39.103.137.84:8000/api"; // Replace with your backend URL
 
 export const upload_file_post = async (formData) => {
     try {
