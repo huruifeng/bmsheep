@@ -1,11 +1,20 @@
 import '/src/assets/bootstrap/css/bootstrap.min.css';
 import { useState, useEffect } from 'react';
+import {useNavigate} from "react-router-dom";
+import {Modal, Spinner} from "react-bootstrap";
+import {chipdesignpop_post} from "../api.js";
 
 const ChipDesignPop = () => {
   const [jobIdPre, setJobIdPre] = useState('');
   const [jobIdTxt, setJobIdTxt] = useState('');
   const [population, setPopulation] = useState('');
   const [nSnp, setNSnp] = useState('');
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [seconds, setSeconds] = useState(5); // Countdown starts at 5 seconds
+  const [modalMessage, setModalMessage] = useState(false);
+
+  const navigate = useNavigate();
 
   // Function to generate random integers
   const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min)) + min;
@@ -24,10 +33,44 @@ const ChipDesignPop = () => {
   }, []);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form submitted with values:', { jobIdPre, jobIdTxt, population, nSnp });
+
     // You can handle form submission logic here, e.g., sending data to the server
+    setIsSubmitting(true);
+    setModalMessage("Starting job...");
+
+    const formData = new FormData();
+    formData.append("job_id", jobIdPre+"_"+jobIdTxt);
+    formData.append("population", population);
+    formData.append("n_snp", nSnp);
+
+    try {
+      // Call your API function here
+      chipdesignpop_post(formData).catch((error) => console.error(error));
+
+      const countdownInterval = setInterval(() => {
+        setSeconds((prev) => {
+          if (prev === 1) {
+            clearInterval(countdownInterval);
+          }
+          return prev - 1
+        });
+      }, 1000);
+
+        // 3. Navigate to the results page
+        setTimeout(() => {
+          navigate(`/results`);
+        }, 5000);
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setIsSubmitting(false);
+    }
+
+    // You can also reset the form after successful submission
+    handleReset();
   };
 
   // Handle form reset
@@ -49,6 +92,20 @@ const ChipDesignPop = () => {
           <p>用户选择背景群体里的其中一个群体，以及位点数量，设计一块鉴定芯片。</p>
         </div>
       </div>
+      {/* Modal */}
+      <Modal show={isSubmitting} centered>
+          <Modal.Header closeButton onClick={() => setIsSubmitting(false)}>
+            <Modal.Title>Submitting...</Modal.Title>
+          </Modal.Header>
+        <Modal.Body className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Submitting...</span>
+          </Spinner>
+          <p className="mt-3">{modalMessage}.<br /> Please wait... { isSubmitting ? seconds + "s" : ""} </p>
+        </Modal.Body>
+      </Modal>
+
+      {/* Form */}
       <div className="row mt-3">
         <div className="col-md-12">
           <h5>参数输入:</h5>

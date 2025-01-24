@@ -21,10 +21,10 @@ const Results = () => {
         fetchJobs();
       }, []);
 
-    // Refresh jobs every 5 seconds。
+    // Refresh jobs every 60 seconds。
     // Stop refreshing when no job is running
     useEffect(() => {
-      const intervalId = setInterval(fetchJobs, 5000);
+      const intervalId = setInterval(fetchJobs, 1000*60);
       return () => clearInterval(intervalId);
     }, [jobs]);
 

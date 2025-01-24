@@ -1,10 +1,22 @@
 import '/src/assets/bootstrap/css/bootstrap.min.css';
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
+import { Modal, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // For navigation
+import {genimpute_post, upload_file_post, varident_post} from '../api';
 
-const VarIdent = () => {
+
+const GenImpute = () => {
   const [jobIdPre, setJobIdPre] = useState('');
   const [jobIdTxt, setJobIdTxt] = useState('');
-  const [vcfFiles, setVcfFiles] = useState([]);
+  // const [vcfFiles, setVcfFiles] = useState([]);
+  const [file, setFile] = useState(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [modalMessage, setModalMessage] = useState(false);
+  const [seconds, setSeconds] = useState(5); // Countdown starts at 5 seconds
+
+  const navigate = useNavigate();
 
   // Generate a random job ID
   const generateJobId = () => {
@@ -18,54 +30,118 @@ const VarIdent = () => {
     generateJobId();
   }, []);
 
+
   // Handle file input change
   const handleFileChange = (e) => {
-    setVcfFiles(Array.from(e.target.files));
-  };
+    // setVcfFiles(Array.from(e.target.files));
+  const selectedFile = e.target.files[0];
+  if (selectedFile && !/\.(vcf|vcf\.gz)$/i.test(selectedFile.name)) {
+    alert("Invalid file type. Please upload a .vcf or .vcf.gz file.");
+    setFile(null);
+  } else {
+    setFile(selectedFile);
+  }
+};
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+   // Handle form submission
+  const handleSubmit = async (e) => {
+   e.preventDefault();
+    if (!file) {
+      alert('Please select a VCF file.');
+      return;
+    }
+
     // Perform form submission logic here
+    setIsSubmitting(true);
+
+    setModalMessage("Uploading file...");
+    setIsUploading(true);
+
     const formData = new FormData();
-    formData.append('job_id_pre', jobIdPre);
-    formData.append('job_id_txt', jobIdTxt);
-    vcfFiles.forEach((file, index) => formData.append(`input_vcf[${index}]`, file));
+    formData.append("job_id", jobIdPre+"_"+jobIdTxt);
+    formData.append("input_vcf", file);
+    try {
+         // 1. Upload the file
+         const uploadResponse = await upload_file_post(formData);
+         if (!uploadResponse.success) {
+            setModalMessage("An error occurred while uploading the file.");
+            setIsUploading(false)
+            setIsSubmitting(false)
+            return ;
+         }
 
-    console.log('Form submitted:', {
-      jobIdPre,
-      jobIdTxt,
-      vcfFiles,
-    });
+         setIsUploading(false)
 
-    // Post formData to the backend (e.g., using fetch or axios)
+        // 2. Start the job
+        setModalMessage("File uploaded successfully! \n Starting job...");
+        // Start the job (fire-and-forget approach)
+         const newFormData = new FormData();
+         newFormData.append("job_id", jobIdPre+"_"+jobIdTxt);
+         newFormData.append("input_vcf", file.name);
+
+         genimpute_post(newFormData).catch((err) => {
+             console.error("Error starting the job:", err); // Handle errors without blocking navigation
+         });
+
+        const countdownInterval = setInterval(() => {
+        setSeconds((prev) => {
+          if (prev === 1) {
+            clearInterval(countdownInterval);
+          }
+          return prev - 1
+        });
+      }, 1000);
+
+        // 3. Navigate to the results page
+        setTimeout(() => {
+          navigate(`/results`);
+        }, 5000);
+
+    } catch (error) {
+      alert('An error occurred while uploading the file.', error);
+    }
   };
 
   // Handle reset
   const handleReset = () => {
-    generateJobId();
-    setVcfFiles([]);
+     generateJobId();
+    setFile(null);
+    document.getElementById("input_vcf").value = ""; // Reset file input
   };
 
   return (
     <div className="varident-container">
       <div className="row pt-3">
-        <div className="col-md-12">当前位置 &gt;&gt; 基因型填充</div>
+        <div className="col-md-12">当前位置 &gt;&gt; 群体判别</div>
       </div>
       <hr />
       <div className="row">
         <div className="col-md-12">
-          <h4>基因型填充</h4>
-          <p>基于用户提交vcf文件用于基因型填充。</p>
+          <h4>群体判别</h4>
+          <p>基于用户提交vcf文件用于品种所属群体判别分析。</p>
         </div>
       </div>
 
+      {/* Modal */}
+      <Modal show={isSubmitting} centered>
+          <Modal.Header closeButton onClick={() => setIsSubmitting(false)}>
+            <Modal.Title>Submitting...</Modal.Title>
+          </Modal.Header>
+        <Modal.Body className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Submitting...</span>
+          </Spinner>
+          <p className="mt-3">{modalMessage}.<br /> Please wait... { ((isSubmitting) && (!isUploading)) ? seconds + "s" : ""} </p>
+        </Modal.Body>
+      </Modal>
+
+      {/* Form */}
       <div className="row mt-3">
         <div className="col-md-12">
           <h5>参数输入:</h5>
           <hr />
           <form onSubmit={handleSubmit}>
-            <div className="row mb-3">
+            <div className="row mb-3 form-group">
               <label htmlFor="job_name" className="col-sm-2 col-form-label">
                 Job name:
               </label>
@@ -110,8 +186,9 @@ const VarIdent = () => {
                     id="input_vcf"
                     name="input_vcf"
                     accept=".vcf,.vcf.gz"
-                    multiple
+                    // multiple
                     onChange={handleFileChange}
+                    required
                   />
                 </div>
               </div>
@@ -122,15 +199,20 @@ const VarIdent = () => {
               <div className="col-sm-10">
                 <div className="row gy-2 gx-3 align-items-center" id="input_button">
                   <div className="col-auto">
-                    <button type="submit" className="btn btn-primary">
-                      &nbsp;&nbsp;&nbsp;&nbsp;Submit&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
                   </div>
                   <div className="col-auto">
                     <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleReset}
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={handleReset}
+                        disabled={isSubmitting}
                     >
                       &nbsp;&nbsp;&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;
                     </button>
@@ -139,10 +221,11 @@ const VarIdent = () => {
               </div>
             </div>
           </form>
+
         </div>
       </div>
     </div>
   );
 };
 
-export default VarIdent;
+export default GenImpute;

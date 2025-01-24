@@ -78,9 +78,10 @@ const VarIdent = () => {
          const newFormData = new FormData();
          newFormData.append("job_id", jobIdPre+"_"+jobIdTxt);
          newFormData.append("input_vcf", file.name);
-        varident_post(newFormData).catch((err) => {
-          console.error("Error starting the job:", err); // Handle errors without blocking navigation
-        });
+
+         varident_post(newFormData).catch((err) => {
+             console.error("Error starting the job:", err); // Handle errors without blocking navigation
+         });
 
         const countdownInterval = setInterval(() => {
         setSeconds((prev) => {
@@ -219,9 +220,8 @@ const VarIdent = () => {
                 </div>
               </div>
             </div>
-
-
           </form>
+
         </div>
       </div>
     </div>
