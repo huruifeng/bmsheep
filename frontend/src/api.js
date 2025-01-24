@@ -88,3 +88,13 @@ export const check_jobs_post = async (userData) => {
     throw error;
   }
 };
+
+export const download_results = async (jobId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/download_results/${jobId}`, { responseType: 'blob' });
+    return response.data;
+  } catch (error) {
+    console.error("Error downloading results:", error);
+    throw error;
+  }
+}

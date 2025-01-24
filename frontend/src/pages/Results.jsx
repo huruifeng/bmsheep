@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {check_jobs_post} from "../api.js";
+import {check_jobs_post, download_results} from "../api.js";
 import {Spinner} from "react-bootstrap";
 
 const Results = () => {
@@ -9,8 +9,8 @@ const Results = () => {
       try {
         const userData = { username: 'all' };
         const data = await check_jobs_post(userData); // Replace with your backend endpoin
-          console.log(data);
-        setJobs(data.jobs);
+          // console.log(data);
+            setJobs(data.jobs);
       } catch (error) {
         console.error('Error fetching jobs:', error);
       }
@@ -28,6 +28,23 @@ const Results = () => {
       return () => clearInterval(intervalId);
     }, [jobs]);
 
+ const handleDownload = async (jobId) => {
+  try {
+    const responseData = await download_results(jobId); // Ensure `download_results` returns the API response
+
+    // Create a URL for the file and trigger download
+    const url = window.URL.createObjectURL(new Blob([responseData]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${jobId}_results.zip`); // Set the file name
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Error downloading the file:", error);
+    alert("Failed to download the results file.");
+  }
+};
 
   return (
       <div className="results-container">
@@ -77,7 +94,7 @@ const Results = () => {
                   </td>
                   <td>
                       {job.status === "Done" ? (
-                          <a className="btn btn-outline-primary btn-sm" href={`/download/${job.job_id}`}>Download</a>
+                          <button className="btn btn-outline-primary btn-sm" onClick={() => handleDownload(job.job_id)}>Download</button>
                       ) : job.status === "Error" ? (
                           // Error state
                           <span style={{color: '#9b0218', fontSize: '1.5rem'}}><i className="bi bi-exclamation-triangle-fill"></i></span>

@@ -7,7 +7,7 @@ tz = pytz.timezone("Asia/Shanghai")
 
 from fastapi import APIRouter
 from fastapi import Request, File, UploadFile, Form, BackgroundTasks
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
 from functions.run_script import run_varidnt, run_genimpute, run_chipdesignvcf, run_chipdesignpop
 
@@ -243,3 +243,18 @@ async def check_jobs_post(request:Request):
         else:
             continue
     return {"success": True, "message": "Job checked successfully", "jobs": jobs}
+
+
+@router.get("/download_results/{job_id}", response_class=FileResponse)
+async def download_results(job_id: str):
+    # Path to the results.zip file
+    file_path = os.path.join(JOB_DIR, job_id, "results.zip")
+
+    if not os.path.exists(file_path):
+        return {"error": "Results file not found"}
+
+    return FileResponse(
+        file_path,
+        media_type="application/zip",
+        filename=f"{job_id}_results.zip"
+    )
