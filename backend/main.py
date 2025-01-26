@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from db import create_db_and_tables
-from routers import API
+from routers import API,auth
 
 app = FastAPI()
 
@@ -15,7 +15,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 app.include_router(API.router, prefix="/api", tags=["APIs"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 app.add_event_handler("startup", create_db_and_tables)
 

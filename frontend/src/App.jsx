@@ -14,6 +14,9 @@ import ChipDesignPop from "./pages/ChipDesignPop.jsx";
 import GenImpute from "./pages/GenImpute.jsx";
 import Results from "./pages/Results.jsx";
 
+import Register from "./pages/Register.jsx";
+import Login from "./pages/Login.jsx";
+
 
 function App() {
   return (
@@ -29,6 +32,11 @@ function App() {
             <Route path="/chipdesignpop" element={<ChipDesignPop />} />
             <Route path="/genimpute" element={<GenImpute />} />
             <Route path="/results" element={<Results />} />
+
+            <Route path="/register" element={<Register/>} />
+            <Route path="/login" element={<Login/>} />
+
+            <Route path="*" element={<Home />} />
         </Routes>
         <Footer />
     </Router>
