@@ -9,8 +9,6 @@ from db import engine, SessionDep
 from models import User, UserCreate
 from auth.jwt_handler import create_access_token, verify_password
 
-SECRET_KEY = "your_secret_key"  # Replace with a secure secret key
-
 router = APIRouter()
 
 ## ==========================================================================
