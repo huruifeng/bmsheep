@@ -39,7 +39,7 @@ def run_varidnt(work_dir,vcf_file):
     with open(f"{work_dir}/job_info.json", "w") as outfile:
         json.dump(job_info, outfile)
 
-    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.{vcf_file}.SNP")]
+    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.")]
     zip_filename = f"{work_dir}/results.zip"
     zip_files(zip_filename, files)
 
@@ -73,7 +73,7 @@ def run_genimpute(work_dir,vcf_file):
     with open(f"{work_dir}/job_info.json", "w") as outfile:
         json.dump(job_info, outfile)
 
-    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.{vcf_file}.SNP")]
+    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.")]
     zip_filename = f"{work_dir}/results.zip"
     zip_files(zip_filename, files)
 
@@ -103,7 +103,7 @@ def run_chipdesignvcf(work_dir,vcf_file,n_snp):
     with open(f"{work_dir}/job_info.json", "w") as outfile:
         json.dump(job_info, outfile)
 
-    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.{vcf_file}.SNP")]
+    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.")]
     zip_filename = f"{work_dir}/results.zip"
     zip_files(zip_filename, files)
 
@@ -133,7 +133,7 @@ def run_chipdesignpop(work_dir,population,n_snp):
     with open(f"{work_dir}/job_info.json", "w") as outfile:
         json.dump(job_info, outfile)
 
-    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.{population}.SNP")]
+    files = [f"{work_dir}/{f_i}" for f_i in os.listdir(work_dir) if f_i.startswith(f"out.")]
     zip_filename = f"{work_dir}/results.zip"
     zip_files(zip_filename, files)
 

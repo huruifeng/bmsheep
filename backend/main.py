@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from db import create_db_and_tables
 from routers import API
+
 app = FastAPI()
 
 app.add_middleware(
@@ -13,18 +15,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
-
 app.include_router(API.router, prefix="/api", tags=["APIs"])
+
+app.add_event_handler("startup", create_db_and_tables)
 
 
 if __name__ == "__main__":
