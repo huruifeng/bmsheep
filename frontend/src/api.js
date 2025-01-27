@@ -16,6 +16,15 @@ export const register_post = async (formData) => {
     }
 }
 
+export const verify_email = async (formData) => {
+    try {
+        const response = await axios.post(`${AUTH_URL}/verify_email`, formData);
+        return response.data;
+    } catch (error) {
+        console.error("Error verifying email:", error);
+        throw error;
+    }
+}
 export const upload_file_post = async (formData) => {
     try {
         const response = await axios.post(`${API_URL}/upload_file`, formData, {
