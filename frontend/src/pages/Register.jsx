@@ -1,10 +1,17 @@
 import { useState } from "react";
+import {useNavigate} from "react-router-dom";
+
 import {Form, Button, Card, Alert, Spinner} from "react-bootstrap";
 import "./styles.css";
 
+import {useUserStore} from "../stores/UserStore";
 import {register_post} from "../api.js";
 
+
 const Register = () => {
+    const navigate = useNavigate();
+    const setUser = useUserStore((state) => state.register);
+
     const [formData, setFormData] = useState({
         full_name: "",
         email: "",
@@ -94,7 +101,9 @@ const Register = () => {
             if (responseData.success) {
                 setFormData({ email: "", institution: "", password: "", full_name: "", confirmpassword: "" });
                 // setErrorMsg(responseData.message);
-                // save user state to zustand and go to the verification page
+                // save user state to zustand store
+                setUser(responseData.user);
+                // go to the verification page
                 navigate("/verify");
 
             }else{

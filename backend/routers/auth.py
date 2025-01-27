@@ -65,7 +65,7 @@ def register_user(user: UserCreate, session: SessionDep):
     session.commit()
     session.refresh(new_user)
 
-    return {"success":False,"message": "Registration successful! Please check your email for verification."}
+    return {"success":False,"message": "Registration successful! Please check your email for verification.",user: {"email": new_user.email}}
 
 ## ==========================================================================
 ## Login

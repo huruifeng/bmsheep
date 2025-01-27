@@ -1,7 +1,7 @@
 // use zustand store the user status
 import { create } from "zustand";
 
-const useUserStore = create((set) => ({
+export const useUserStore = create((set) => ({
     user: null,
 
     setUser: (user) => set({ user }),
