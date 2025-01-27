@@ -11,16 +11,19 @@ tz = pytz.timezone("Asia/Shanghai")
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     institution: Optional[str] = Field(default=None)
-    register_time: datetime = Field(default_factory=datetime.now, index=True)
-    last_login_time: datetime = Field(default_factory=datetime.now, index=True)
+    full_name: Optional[str] = Field(default=None)
 
-    is_admin: bool = Field(default=False)
 
 # Database model, database table inferred from class name
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     jobs: list["Job"] = Relationship(back_populates="owner", cascade_delete=True)
+
+    register_time: datetime = Field(default_factory=datetime.now, index=True)
+    last_login_time: datetime = Field(default_factory=datetime.now, index=True)
+
+    is_admin: bool = Field(default=False)
 
     # Verification
     is_verified: bool = Field(default=False)
@@ -70,7 +73,7 @@ class JobBase(SQLModel):
 class Job(JobBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, ondelete="CASCADE")
-    owner: User | None = Relationship(back_populates="items")
+    owner: User | None = Relationship(back_populates="jobs")
 
 # Properties to receive on item creation
 class JobCreate(JobBase):

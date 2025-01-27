@@ -4,20 +4,42 @@ from sqlmodel import select
 from passlib.hash import bcrypt
 
 import uuid
+import random
+
+from datetime import datetime,timedelta
+import pytz
+tz = pytz.timezone("Asia/Shanghai")
 
 from db import engine, SessionDep
 from models import User, UserCreate
-from auth.jwt_handler import create_access_token, verify_password
+
+from auth.jwt_handler import create_access_token
+from utils.hash_utils import verify_password
+
 
 router = APIRouter()
 
+## generate a 6-digit verification code
+def generate_verification_code() -> str:
+    """
+    Generate a 6-digit numeric verification code.
+
+    Returns:
+        str: A 6-digit verification code as a string.
+    """
+    return f"{random.randint(100001, 999998)}"
+
+
 ## ==========================================================================
-@router.post("/register", response_model=UserCreate)
+@router.post("/register")
 def register_user(user: UserCreate, session: SessionDep):
+    print("Registering user...")
+    print(user)
     # Check if the email already exists
-    existing_user = session.query(User).filter(User.email == user.email).first()
+    existing_user = session.exec(select(User).where(User.email == user.email)).first()
     if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        # raise HTTPException(status_code=400, detail="Email already registered")
+        return {"success":False,"message": "Email already registered"}
 
     # Hash the password
     hashed_password = bcrypt.hash(user.password)
@@ -28,13 +50,22 @@ def register_user(user: UserCreate, session: SessionDep):
         email=user.email,
         institution=user.institution,
         hashed_password=hashed_password,
+        full_name=user.full_name,
+
         is_admin=False,
-        is_verified=False,
+
+        register_time = datetime.now(tz),
+        last_login_time = datetime.now(tz),
+
+        is_verified = False,
+        verification_code = generate_verification_code(),
+        verification_code_expiration = datetime.now(tz) + timedelta(days=1),
     )
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-    return new_user
+
+    return {"success":False,"message": "Registration successful! Please check your email for verification."}
 
 ## ==========================================================================
 ## Login

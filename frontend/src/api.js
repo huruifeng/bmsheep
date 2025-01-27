@@ -1,11 +1,24 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000/api"; // Replace with your backend URL
+const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
 // const BASE_URL = "http://39.103.137.84:8000/api"; // Replace with your backend URL
+
+const API_URL = `${BASE_URL}/api`;
+const AUTH_URL = `${BASE_URL}/auth`;
+
+export const register_post = async (formData) => {
+    try {
+        const response = await axios.post(`${AUTH_URL}/register`, formData);
+        return response.data;
+    } catch (error) {
+        console.error("Error registering user:", error);
+        throw error;
+    }
+}
 
 export const upload_file_post = async (formData) => {
     try {
-        const response = await axios.post(`${BASE_URL}/upload_file`, formData, {
+        const response = await axios.post(`${API_URL}/upload_file`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -19,7 +32,7 @@ export const upload_file_post = async (formData) => {
 
 export const varident_post = async (formData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/varident`, formData, {
+    const response = await axios.post(`${API_URL}/varident`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -34,7 +47,7 @@ export const varident_post = async (formData) => {
 
 export const chipdesignvcf_post = async (formData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/chipdesignvcf`, formData, {
+    const response = await axios.post(`${API_URL}/chipdesignvcf`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -48,7 +61,7 @@ export const chipdesignvcf_post = async (formData) => {
 
 export const chipdesignpop_post = async (formData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/chipdesignpop`, formData, {
+    const response = await axios.post(`${API_URL}/chipdesignpop`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -62,7 +75,7 @@ export const chipdesignpop_post = async (formData) => {
 
 export const genimpute_post = async (formData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/genimpute`, formData, {
+    const response = await axios.post(`${API_URL}/genimpute`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -76,7 +89,7 @@ export const genimpute_post = async (formData) => {
 
 export const check_jobs_post = async (userData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/check_jobs`, userData,{
+    const response = await axios.post(`${API_URL}/check_jobs`, userData,{
          headers: {
             'Content-Type': 'application/json',
         },
@@ -91,7 +104,7 @@ export const check_jobs_post = async (userData) => {
 
 export const download_results = async (jobId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/download_results/${jobId}`, { responseType: 'blob' });
+    const response = await axios.get(`${API_URL}/download_results/${jobId}`, { responseType: 'blob' });
     return response.data;
   } catch (error) {
     console.error("Error downloading results:", error);
