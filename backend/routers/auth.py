@@ -14,8 +14,9 @@ from db import engine, SessionDep
 from models import User, UserCreate
 
 from auth.jwt_handler import create_access_token
-from utils.hash_utils import verify_password
 
+from utils.hash_utils import verify_password
+from utils.email_utils import send_verification_email
 
 router = APIRouter()
 
@@ -68,7 +69,7 @@ def register_user(user: UserCreate, session: SessionDep):
     # Send verification email
     send_verification_email(new_user.email, new_user.verification_code)
 
-    return {"success":False,"message": "Registration successful! Please check your email for verification.",user: new_user}
+    return {"success":True,"message": "Registration successful! Please check your email for verification.", "user": new_user}
 
 ## ==========================================================================
 ## Login

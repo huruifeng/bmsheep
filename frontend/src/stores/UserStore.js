@@ -5,15 +5,15 @@ export const useUserStore = create((set) => ({
     user: null,
     verified: false,
 
-    setUser: (user) => set({ user }),
-
-    getUser: () => useUserStore.getState().user,
+    register: (user) => set({ user }),
 
     login: (user) => set({ user }),
+
     logout: () => set({ user: null }),
+
+    reset: () => set({ user: null, verified: false }),
 
     isAuthenticated: () => !!useUserStore.getState().user,
 
-    register: (user) => set({ user }),
-
+    setVerified: (verified) => set({ verified }),
 }));

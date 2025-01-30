@@ -103,6 +103,7 @@ const Register = () => {
                 // setErrorMsg(responseData.message);
                 // save user state to zustand store
                 setUser(responseData.user);
+
                 // go to the verification page
                 navigate("/verify");
 
