@@ -5,4 +5,4 @@ router = APIRouter()
 
 @router.get("/dashboard", dependencies=[Depends(JWTBearer())])
 def dashboard(user: dict = Depends(JWTBearer())):
-    return {"message": f"Welcome, user {user['sub']}"}
+    return {"message": f"Welcome, user {user['full_name']}!"}

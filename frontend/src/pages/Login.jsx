@@ -28,7 +28,7 @@ const Login = () => {
             const responseData = await login_post(formData);
             if (responseData.success) {
                 // Login successful, redirect to the dashboard
-                login(responseData);
+                login(responseData.token);
                 navigate("/");
 
             } else {

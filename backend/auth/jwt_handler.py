@@ -1,13 +1,17 @@
+import os
+
 import jwt
 from datetime import datetime, timedelta
 from typing import Dict
+import dotenv
+dotenv.load_dotenv()
 
 import pytz
 tz = pytz.timezone("Asia/Shanghai")
 
-SECRET_KEY = "LeoHwuYanqingLouRuifengHu"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour
+SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+ALGORITHM = os.getenv('JWT_ALGORITHM')
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv('JWT_ACCESS_TOKEN_EXPIRE_MINUTES')
 
 def create_access_token(data: dict) -> str:
     payload = data.copy()

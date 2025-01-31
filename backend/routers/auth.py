@@ -151,6 +151,10 @@ def login(request: LoginRequest, session: SessionDep):
     user_dict = {"full_name": user.full_name, "email": user.email, "is_admin": user.is_admin, "is_verified": user.is_verified}
 
     token = create_access_token(user_dict)
-    return {"access_token": token, "token_type": "Bearer"}
+    return {
+        "success":True,
+        "message": "Login successful",
+        "token": {"access_token": token, "token_type": "Bearer"}
+    }
 
 

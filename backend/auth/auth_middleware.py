@@ -1,10 +1,14 @@
+import os
+
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException
 import jwt
-from datetime import datetime, timedelta
 
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
+from dotenv import load_dotenv
+load_dotenv()
+
+SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+ALGORITHM = os.getenv('JWT_ALGORITHM')
 
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
