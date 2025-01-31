@@ -7,10 +7,10 @@ const useAuthStore = create(
     token: null,
     user: null,
 
-    login: (token) => {
-        set({ token, user: jwtDecode(token) });
+    loginUser: (access_token) => {
+        set({ token: access_token, user: jwtDecode(access_token) });
     },
-    logout: () => {
+    logoutUser: () => {
         set({ token: null, user: null });
     },
 

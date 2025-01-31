@@ -155,7 +155,8 @@ def login(request: LoginRequest, session: SessionDep):
     return {
         "success":True,
         "message": "Login successful",
-        "token": {"access_token": token, "token_type": "Bearer"}
+        "access_token": token,
+        "token_type": "Bearer"
     }
 
 

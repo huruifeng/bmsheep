@@ -3,12 +3,12 @@ import { Form, Button, Card, Alert } from "react-bootstrap";
 import "./styles.css";
 import {useNavigate} from "react-router-dom";
 import {login_post} from "../api.js";
-import useAuthStore from "../stores/authStore.js"; // Include the CSS file for centering
+import useAuthStore from "../stores/authStore.js";
 
 const Login = () => {
     const navigate = useNavigate();
 
-    const {user, login} = useAuthStore((state) => state);
+    const { loginUser, user } = useAuthStore();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -26,9 +26,11 @@ const Login = () => {
         try {
             // Perform login logic
             const responseData = await login_post(formData);
+            const { access_token } = responseData;
+            const {message} = responseData;
             if (responseData.success) {
                 // Login successful, redirect to the dashboard
-                login(responseData.token);
+                loginUser(access_token);
                 if(user.is_verified === false){
                      navigate("/verify");
                 } else {
@@ -36,7 +38,7 @@ const Login = () => {
                 }
 
             } else {
-                setError(responseData.message || "Login failed. Please check your credentials.");
+                setError(message || "Login failed. Please check your credentials.");
             }
 
         } catch (err) {

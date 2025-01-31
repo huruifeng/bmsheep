@@ -38,7 +38,11 @@ export const send_code = async (formData) => {
 
 export const login_post = async (formData) => {
     try {
-        const response = await axios.post(`${AUTH_URL}/login`, formData);
+        const response = await axios.post(`${AUTH_URL}/login`, formData,{
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error logging in:", error);
