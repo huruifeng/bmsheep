@@ -6,7 +6,7 @@ import NavBar from "./components/NavBar";
 import TopBanner from "./components/TopBanner";
 import Footer from "./components/Footer";
 
-import Home from './pages/Home'
+import Home from './pages/Home.jsx'
 import VarQuery from "./pages/VarQuery.jsx";
 import VarIdent from "./pages/VarIdent.jsx";
 import ChipDesignVCF from "./pages/ChipDesignVCF.jsx";
@@ -38,7 +38,7 @@ function App() {
             <Route path="/register" element={<Register/>} />
             <Route path="/login" element={<Login/>} />
             <Route path="/verify" element={<Varify/>} />
-            <Route path="/dashbord" element={<Dashboard/>} />
+            <Route path="/dashboard" element={<Dashboard />} />
 
             <Route path="*" element={<Home />} />
         </Routes>

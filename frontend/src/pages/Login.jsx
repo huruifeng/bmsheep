@@ -1,28 +1,41 @@
 import { useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import {Form, Button, Card, Alert, Spinner} from "react-bootstrap";
 import "./styles.css";
 import {useNavigate} from "react-router-dom";
-import {login_post} from "../api.js";
+import {login_post, send_code} from "../api.js";
 import useAuthStore from "../stores/authStore.js";
 
 const Login = () => {
     const navigate = useNavigate();
 
-    const { loginUser, user } = useAuthStore();
+    const {user,setToken, login} = useAuthStore();
 
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+     // const handleSubmit2 = async (e) => {
+     //    e.preventDefault();
+     //    const success = await login(formData.email, formData.password);
+     //    if (success) {
+     //      navigate("/dashboard");
+     //    } else {
+     //      setError("Invalid credentials");
+     //    }
+     //  };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError(null);
         try {
             // Perform login logic
             const responseData = await login_post(formData);
@@ -30,20 +43,29 @@ const Login = () => {
             const {message} = responseData;
             if (responseData.success) {
                 // Login successful, redirect to the dashboard
-                loginUser(access_token);
-                if(user.is_verified === false){
-                     navigate("/verify");
-                } else {
-                    navigate("/dashboard");
-                }
+                setToken(access_token);
+
+                // Wait for Zustand state to update before accessing `user`
+                setTimeout(async () => {
+                    const updatedUser = useAuthStore.getState().user;
+                    console.log("Updated User:", updatedUser);
+
+                    if (updatedUser?.is_verified === false) {
+                        await send_code({email: updatedUser.email});
+                        navigate("/verify");
+                    } else {
+                        navigate("/dashboard");
+                    }
+                }, 1000); // Small delay to allow state update
 
             } else {
-                setError(message || "Login failed. Please check your credentials.");
+                    setError(message || "Login failed. Please check your credentials.");
             }
 
         } catch (err) {
             setError("An error occurred.", err);
         }
+        setLoading(false);
     };
 
     return (
@@ -75,9 +97,11 @@ const Login = () => {
                                 required
                             />
                         </Form.Group>
-                        <Button variant="primary" type="submit" className="w-100">
-                            Login
+
+                        <Button type="submit" variant="primary" disabled={loading} className="w-100">
+                            {loading ? <Spinner size="sm" animation="border" /> : "Login"}
                         </Button>
+
                         <div className="text-center mt-3">
                             <p>
                                 Don&#39;t have an account?{" "}

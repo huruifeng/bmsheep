@@ -20,15 +20,15 @@ class User(UserBase, table=True):
     hashed_password: str
     jobs: list["Job"] = Relationship(back_populates="owner", cascade_delete=True)
 
-    register_time: datetime = Field(default_factory=datetime.now, index=True)
-    last_login_time: datetime = Field(default_factory=datetime.now, index=True)
+    register_time: datetime = Field(default_factory=lambda: datetime.now(tz), index=True)
+    last_login_time: datetime = Field(default_factory=lambda: datetime.now(tz), index=True)
 
     is_admin: bool = Field(default=False)
 
     # Verification
     is_verified: bool = Field(default=False)
     verification_code: Optional[str] = Field(default=None)
-    verification_code_expiration: datetime = Field(default_factory=datetime.now, index=True)
+    verification_code_expiration: datetime = Field(default_factory=lambda: datetime.now(tz), index=True)
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
@@ -66,8 +66,8 @@ class JobBase(SQLModel):
     job_type: str | None = Field(default=None, max_length=255)
     status: str | None = Field(default=None, max_length=255)
     error: str | None = Field(default=None, max_length=255)
-    start_time: datetime | None = Field(default_factory=datetime.now, index=True)
-    end_time: datetime | None = Field(default_factory=datetime.now, index=True)
+    start_time: datetime | None = Field(default_factory=lambda: datetime.now(tz), index=True)
+    end_time: datetime | None = Field(default_factory=lambda: datetime.now(tz), index=True)
 
 # Database model, database table inferred from class name
 class Job(JobBase, table=True):

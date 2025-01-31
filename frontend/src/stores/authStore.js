@@ -1,45 +1,43 @@
 import { create } from "zustand";
+import axios from "axios";
 import {jwtDecode} from "jwt-decode";
-import { persist, createJSONStorage } from "zustand/middleware";
 
-const useAuthStore = create(
-  persist((set, get) => ({
-    token: null,
-    user: null,
+const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
+// const BASE_URL = "http://39.103.137.84:8000/api"; // Replace with your backend URL
 
-    loginUser: (access_token) => {
-        set({ token: access_token, user: jwtDecode(access_token) });
-    },
-    logoutUser: () => {
-        set({ token: null, user: null });
-    },
+const AUTH_URL = `${BASE_URL}/auth`;
 
-      isAuthenticated: () => {
-          return !!get().token;
-      },
+const useAuthStore = create((set) => ({
+  token: localStorage.getItem("token") || null,
+  user: localStorage.getItem("token") ? jwtDecode(localStorage.getItem("token")) : null,
 
-      getUser: () => {
-          return get().user;
-      },
+  setToken: (access_token) => {
+    localStorage.setItem("token", access_token);
+    set({ token: access_token, user: jwtDecode(access_token) });
+  },
 
-      getToken: () => {
-          return get().token;
-      },
+    isAuthenticated: () => !!localStorage.getItem("token"),
 
-      setToken: (token) => {
-          set({ token });
-      },
+  login: async (email, password) => {
+    try {
+      const response = await axios.post(`${AUTH_URL}/login`, { email, password });
+      console.log(response.data);
+      const {access_token} = response.data;
+      localStorage.setItem("token", access_token);
+      set({ token: access_token, user: jwtDecode(access_token) });
 
-      setUser: (user) => {
-          set({ user });
-      },
+      return true;
 
-  }),
-      {
-          name: "auth-storage",
-          storage: createJSONStorage(() => localStorage),
-      }
-  )
-);
+    } catch (error) {
+      console.error("Login failed", error);
+      return false;
+    }
+  },
+
+  logout: () => {
+    localStorage.removeItem("token");
+    set({ token: null, user: null });
+  }
+}));
 
 export default useAuthStore;

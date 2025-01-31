@@ -18,7 +18,15 @@ const Verify = () => {
 
     const {user} = useAuthStore((state) => state);
 
+    if (!user) {
+        navigate("/login");
+        return null;
+    }
+
+
+
     const handleChange = (value, index) => {
+        setErrorMsg(null);
         if (!/^\d$/.test(value) && value !== "") return; // Only allow numbers
         const updatedCode = [...code];
         updatedCode[index] = value;
@@ -31,6 +39,7 @@ const Verify = () => {
     };
 
     const handleBackspace = (index) => {
+        setErrorMsg(null);
         if (index > 0 && code[index] === "") {
             document.getElementById(`code-input-${index - 1}`).focus();
         }
@@ -50,6 +59,7 @@ const Verify = () => {
 
         try {
             const verificationCode = code.join("");
+            console.log(verificationCode);
             const responseData = await verify_email({
                 email: user.email,
                 code: verificationCode
@@ -71,6 +81,7 @@ const Verify = () => {
     };
 
     const handleResend = async () => {
+        setErrorMsg(null);
         try {
             const responseData = await send_code({
                 email: user.email
