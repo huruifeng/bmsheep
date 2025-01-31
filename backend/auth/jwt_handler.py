@@ -5,13 +5,14 @@ from typing import Dict
 import pytz
 tz = pytz.timezone("Asia/Shanghai")
 
-SECRET_KEY = "your_secret_key"
+SECRET_KEY = "LeoHwuYanqingLouRuifengHu"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour
 
-def create_access_token(user_id: str) -> str:
+def create_access_token(data: dict) -> str:
+    payload = data.copy()
     expiration = datetime.now(tz) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {"sub": user_id, "exp": expiration}
+    payload.update({"exp": expiration})
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 

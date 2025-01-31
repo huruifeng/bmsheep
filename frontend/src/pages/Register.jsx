@@ -4,13 +4,11 @@ import {useNavigate} from "react-router-dom";
 import {Form, Button, Card, Alert, Spinner} from "react-bootstrap";
 import "./styles.css";
 
-import {useUserStore} from "../stores/UserStore";
 import {register_post} from "../api.js";
 
 
 const Register = () => {
     const navigate = useNavigate();
-    const setUser = useUserStore((state) => state.register);
 
     const [formData, setFormData] = useState({
         full_name: "",
@@ -100,12 +98,17 @@ const Register = () => {
             });
             if (responseData.success) {
                 setFormData({ email: "", institution: "", password: "", full_name: "", confirmpassword: "" });
-                // setErrorMsg(responseData.message);
-                // save user state to zustand store
-                setUser(responseData.user);
+                setErrorMsg(responseData.message);
+
+                setPasswdError(null);
+                setConfirmPasswdError(null);
+                setEmailError(null);
+
+                // delay for 3 seconds
+                await new Promise((resolve) => setTimeout(resolve, 3000));
 
                 // go to the verification page
-                navigate("/verify");
+                navigate("/login");
 
             }else{
                 setErrorMsg(responseData.message);
@@ -201,6 +204,13 @@ const Register = () => {
                         <Button type="submit" variant="primary" disabled={loading || !allValid} className="w-100">
                             {loading ? <Spinner size="sm" animation="border" /> : "Register"}
                         </Button>
+
+                        <div className="text-center mt-3">
+                            <p>
+                                Already have an account? <a href="/login">Login</a>
+                            </p>
+                        </div>
+
                     </Form>
                 </Card.Body>
             </Card>

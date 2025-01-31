@@ -31,6 +31,11 @@ def generate_verification_code() -> str:
     return f"{random.randint(100001, 999998)}"
 
 
+def del_expired_users(session: SessionDep):
+    session.exec(select(User).where(User.verification_code_expiration < datetime.now(tz))).delete()
+    session.commit()
+    return {"success":True,"message": "Expired users deleted successfully"}
+
 ## ==========================================================================
 @router.post("/register")
 def register_user(user: UserCreate, session: SessionDep):
@@ -67,9 +72,66 @@ def register_user(user: UserCreate, session: SessionDep):
     session.refresh(new_user)
 
     # Send verification email
-    send_verification_email(new_user.email, new_user.verification_code)
+    # send_verification_email(new_user.email, new_user.verification_code)
 
-    return {"success":True,"message": "Registration successful! Please check your email for verification.", "user": new_user}
+    return {
+        "success":True,
+        "message": "Registration successful! Redirecting to login page...",
+        "user": {"full_name": new_user.full_name, "email": new_user.email}
+        }
+
+
+@router.post("/verify_email")
+def verify_email(request: dict, session: SessionDep):
+    email = request.get("email")
+    code = request.get("code")
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        # raise HTTPException(status_code=400, detail="User not found")
+        return {"success":False,"message": "User not found"}
+
+    if user.verification_code != code:
+        # raise HTTPException(status_code=400, detail="Invalid verification code")
+        return {"success":False,"message": "Invalid verification code"}
+
+    if user.verification_code_expiration < datetime.now(tz):
+        # raise HTTPException(status_code=400, detail="Verification code has expired")
+        return {"success":False,"message": "Verification code has expired"}
+
+    user.is_verified = True
+    user.verification_code = None
+    user.verification_code_expiration = None
+    session.add(user)
+    session.commit()
+
+    return {"success":True,"message": "Email verified successfully"}
+
+@router.post("/send_code")
+def send_code(request: dict, session: SessionDep):
+    email = request.get("email")
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        # raise HTTPException(status_code=400, detail="User not found")
+        return {"success":False,"message": "User not found"}
+
+    if user.is_verified:
+        # raise HTTPException(status_code=400, detail="Email already verified")
+        return {"success":False,"message": "Email already verified"}
+
+    if user.verification_code_expiration < datetime.now(tz):
+        # generate new code
+        user.verification_code = generate_verification_code()
+        user.verification_code_expiration = datetime.now(tz) + timedelta(days=1)
+        session.add(user)
+        session.commit()
+
+        # send email
+        send_verification_email(user.email, user.verification_code)
+        return {"success": True, "message": "New verification code sent successfully"}
+    else:
+        send_verification_email(user.email, user.verification_code)
+        return {"success": True, "message": "Verification code sent successfully"}
+
 
 ## ==========================================================================
 ## Login
@@ -77,19 +139,18 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
-class LoginResponse(BaseModel):
-    access_token: str
-    token_type: str
 
 
-@router.post("/login", response_model=LoginResponse)
+@router.post("/login")
 def login(request: LoginRequest, session: SessionDep):
     # user = session.query(User).filter(User.email == request.email).first()
     user = session.exec(select(User).where(User.email == request.email)).first()
     if not user or not verify_password(request.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        # raise HTTPException(status_code=401, detail="Invalid email or password")
+        return {"success":False,"message": "Invalid email or password"}
+    user_dict = {"full_name": user.full_name, "email": user.email, "is_admin": user.is_admin, "is_verified": user.is_verified}
 
-    token = create_access_token(str(user.id))
+    token = create_access_token(user_dict)
     return {"access_token": token, "token_type": "Bearer"}
 
 

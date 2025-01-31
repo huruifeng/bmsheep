@@ -25,6 +25,28 @@ export const verify_email = async (formData) => {
         throw error;
     }
 }
+
+export const send_code = async (formData) => {
+    try {
+        const response = await axios.post(`${AUTH_URL}/send_code`, formData);
+        return response.data;
+    } catch (error) {
+        console.error("Error sending code:", error);
+        throw error;
+    }
+}
+
+export const login_post = async (formData) => {
+    try {
+        const response = await axios.post(`${AUTH_URL}/login`, formData);
+        return response.data;
+    } catch (error) {
+        console.error("Error logging in:", error);
+        throw error;
+    }
+}
+
+
 export const upload_file_post = async (formData) => {
     try {
         const response = await axios.post(`${API_URL}/upload_file`, formData, {
