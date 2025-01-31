@@ -17,6 +17,7 @@ import Results from "./pages/Results.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import Varify from "./pages/Varify.jsx";
+import Dashboard from "./pages/Dashboard";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/register" element={<Register/>} />
             <Route path="/login" element={<Login/>} />
             <Route path="/verify" element={<Varify/>} />
+            <Route path="/dashbord" element={<Dashboard/>} />
 
             <Route path="*" element={<Home />} />
         </Routes>

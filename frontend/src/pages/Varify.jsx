@@ -5,7 +5,8 @@ import {useNavigate} from "react-router-dom";
 import "./styles.css";
 
 import {send_code, verify_email} from "../api.js";
-import {useUserStore} from "../stores/UserStore.js";
+import useAuthStore from "../stores/authStore.js";
+
 
 const Verify = () => {
     const [code, setCode] = useState(Array(6).fill(""));
@@ -15,16 +16,7 @@ const Verify = () => {
 
     const navigate = useNavigate();
 
-    // get user status from zustand store
-    const {user, verified, setUser, setVerified} = useUserStore((state) => state);
-
-    if (!user) {
-        navigate("/login");
-    }
-
-    if (verified) {
-        navigate("/");
-    }
+    const {user} = useAuthStore((state) => state);
 
     const handleChange = (value, index) => {
         if (!/^\d$/.test(value) && value !== "") return; // Only allow numbers
@@ -66,9 +58,8 @@ const Verify = () => {
                 setSuccessMsg("Your email has been successfully verified.");
                 setCode(Array(6).fill(""));
 
-                setUser(responseData.user);
-                setVerified(responseData.user.is_verified);
-                navigate("/");
+                navigate("/dashboard");
+
             } else {
                 setErrorMsg(responseData.message || "Verification failed.");
             }
@@ -100,7 +91,8 @@ const Verify = () => {
                 <Card.Body>
                     <Card.Title className="text-center mb-4">Email Verification</Card.Title>
                     <Card.Text className="text-center mb-4">
-                        The verification code has been sent to your email: {user.email}. <br />The code is valid for 24 hours.
+                        Please verify your email address. <br/>
+                        The verification code has been sent to your email: {user.email}.
                     </Card.Text>
 
                     {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}

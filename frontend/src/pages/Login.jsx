@@ -8,7 +8,7 @@ import useAuthStore from "../stores/authStore.js"; // Include the CSS file for c
 const Login = () => {
     const navigate = useNavigate();
 
-    const {login} = useAuthStore((state) => state);
+    const {user, login} = useAuthStore((state) => state);
 
     const [formData, setFormData] = useState({
         email: "",
@@ -29,14 +29,18 @@ const Login = () => {
             if (responseData.success) {
                 // Login successful, redirect to the dashboard
                 login(responseData.token);
-                navigate("/");
+                if(user.is_verified === false){
+                     navigate("/verify");
+                } else {
+                    navigate("/dashboard");
+                }
 
             } else {
                 setError(responseData.message || "Login failed. Please check your credentials.");
             }
 
         } catch (err) {
-            setError("Login failed. Please check your credentials.", err);
+            setError("An error occurred.", err);
         }
     };
 
@@ -77,6 +81,11 @@ const Login = () => {
                                 Don&#39;t have an account?{" "}
                                 <a href="/register" className="text-decoration-none">
                                     Register
+                                </a>
+                            </p>
+                            <p>
+                                <a href="/forgot-password" className="text-decoration-none">
+                                    Forgot Password?
                                 </a>
                             </p>
                         </div>
