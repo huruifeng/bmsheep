@@ -51,9 +51,13 @@ export const login_post = async (formData) => {
     }
 }
 
-export const get_profile = async (formData) => {
+export const get_profile = async (email, token) => {
     try {
-        const response = await axios.get(`${USER_URL}/get_profile`, formData);
+        const response = await axios.get(`${USER_URL}/get_profile?email=${encodeURIComponent(email)}`,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data;
     } catch (error) {
         console.error("Error getting profile:", error);
@@ -61,6 +65,19 @@ export const get_profile = async (formData) => {
     }
 }
 
+export const update_profile = async (formData, token) => {
+    try {
+        const response = await axios.put(`${USER_URL}/update_profile`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+    }
+}
 
 
 export const upload_file_post = async (formData) => {
