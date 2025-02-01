@@ -30,9 +30,7 @@ Logic for authentication:
 
 
 
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel
+from fastapi import APIRouter
 from sqlmodel import select
 from passlib.hash import bcrypt
 

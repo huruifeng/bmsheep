@@ -19,7 +19,6 @@ app.add_middleware(
 
 app.include_router(API.router, prefix="/api", tags=["APIs"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-
 app.include_router(user.router, prefix="/user", tags=["user"])
 
 app.add_event_handler("startup", create_db_and_tables)

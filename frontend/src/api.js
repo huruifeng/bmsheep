@@ -5,6 +5,7 @@ const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
 
 const API_URL = `${BASE_URL}/api`;
 const AUTH_URL = `${BASE_URL}/auth`;
+const USER_URL = `${BASE_URL}/user`;
 
 export const register_post = async (formData) => {
     try {
@@ -49,6 +50,17 @@ export const login_post = async (formData) => {
         throw error;
     }
 }
+
+export const get_profile = async (formData) => {
+    try {
+        const response = await axios.get(`${USER_URL}/get_profile`, formData);
+        return response.data;
+    } catch (error) {
+        console.error("Error getting profile:", error);
+        throw error;
+    }
+}
+
 
 
 export const upload_file_post = async (formData) => {
