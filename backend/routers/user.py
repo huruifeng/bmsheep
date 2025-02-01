@@ -53,10 +53,13 @@ def update_password(request: dict, user: dict = Depends(JWTBearer()), session: S
         # raise HTTPException(status_code=400, detail="User not found")
         return {"success": False, "message": "User not found"}
 
-    password = request.get("newPassword")
-    hashed_password = pwd_context.hash(password)
+    current_password = request.get("currentPassword")
+    if not pwd_context.verify(current_password, user.hashed_password):
+        # raise HTTPException(status_code=400, detail="Invalid current password")
+        return {"success": False, "message": "Invalid current password"}
 
-    user.hashed_password = hashed_password
+    password = request.get("newPassword")
+    user.hashed_password = pwd_context.hash(password)
 
     session.add(user)
     session.commit()

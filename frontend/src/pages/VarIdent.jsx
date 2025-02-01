@@ -109,6 +109,16 @@ const VarIdent = () => {
     document.getElementById("input_vcf").value = ""; // Reset file input
   };
 
+  const handleDownload = (filename) => {
+        const fileUrl = `/example_data/${filename}.vcf`; // File path in public folder
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = filename + ".vcf"; // Ensures the file downloads
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+};
+
   return (
     <div className="varident-container">
       <div className="row pt-3">
@@ -215,6 +225,15 @@ const VarIdent = () => {
                         disabled={isSubmitting}
                     >
                       &nbsp;&nbsp;&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;
+                    </button>
+                  </div>
+                  <div className="col-auto">
+                    <button
+                        type="button"
+                        className="btn btn-outline-success"
+                        onClick={() => handleDownload("example_varident")}
+                    >
+                      &nbsp;&nbsp;&nbsp;&nbsp;Example data&nbsp;&nbsp;&nbsp;&nbsp;
                     </button>
                   </div>
                 </div>

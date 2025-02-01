@@ -109,7 +109,6 @@ const ChipDesignVCF = () => {
       alert('An error occurred while uploading the file.', error);
     }
 
-
   };
 
   // Handle form reset
@@ -119,6 +118,17 @@ const ChipDesignVCF = () => {
     setFile(null);
     setNSnp('');
   };
+
+  const handleDownload = (filename) => {
+        const fileUrl = `/example_data/${filename}.vcf`; // File path in public folder
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = filename + ".vcf"; // Ensures the file downloads
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+  };
+
 
   return (
     <div className="chipdesign-container">
@@ -226,27 +236,36 @@ const ChipDesignVCF = () => {
             <div className="row mt-4">
               <label htmlFor="input_button" className="col-sm-2 col-form-label"></label>
               <div className="col-sm-10">
-                <div className="row gy-2 gx-3 align-items-center" id="input_button">
-                  <div className="col-auto">
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Submitting..." : "Submit"}
-                    </button>
+                  <div className="row gy-2 gx-3 align-items-center" id="input_button">
+                      <div className="col-auto">
+                          <button
+                              type="submit"
+                              className="btn btn-primary"
+                              disabled={isSubmitting}
+                          >
+                              {isSubmitting ? "Submitting..." : "Submit"}
+                          </button>
+                      </div>
+                      <div className="col-auto">
+                          <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={handleReset}
+                              disabled={isSubmitting}
+                          >
+                              &nbsp;&nbsp;&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;
+                          </button>
+                      </div>
+                      <div className="col-auto">
+                          <button
+                              type="button"
+                              className="btn btn-outline-success"
+                              onClick={() => handleDownload("example_chipdesign")}
+                          >
+                              &nbsp;&nbsp;&nbsp;&nbsp;Example data&nbsp;&nbsp;&nbsp;&nbsp;
+                          </button>
+                      </div>
                   </div>
-                  <div className="col-auto">
-                    <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={handleReset}
-                        disabled={isSubmitting}
-                    >
-                      &nbsp;&nbsp;&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </form>

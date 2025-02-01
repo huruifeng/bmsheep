@@ -17,6 +17,11 @@ const Login = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    // if user is logged in, redirect to dashboard
+    if(user){
+        navigate("/dashboard");
+    }
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
