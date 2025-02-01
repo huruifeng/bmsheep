@@ -1,7 +1,9 @@
 from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select, Session
+
+from passlib.context import CryptContext
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from auth.auth_middleware import JWTBearer
 
@@ -42,5 +44,24 @@ def update_profile(request: dict, user: dict = Depends(JWTBearer()), session: Se
     user_dict = {"full_name": user.full_name, "email": user.email, "institution": user.institution, "is_admin": user.is_admin, "is_verified": user.is_verified}
 
     return {"success": True, "user": user_dict}
+
+@router.put("/update_password", dependencies=[Depends(JWTBearer())])
+def update_password(request: dict, user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
+    email = user.get("email")
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        # raise HTTPException(status_code=400, detail="User not found")
+        return {"success": False, "message": "User not found"}
+
+    password = request.get("newPassword")
+    hashed_password = pwd_context.hash(password)
+
+    user.hashed_password = hashed_password
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return {"success": True, "message": "Password updated successfully"}
 
 

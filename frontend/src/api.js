@@ -79,6 +79,20 @@ export const update_profile = async (formData, token) => {
     }
 }
 
+export const update_password = async (formData, token) => {
+    try {
+        const response = await axios.put(`${USER_URL}/update_password`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error updating password:", error);
+        throw error;
+    }
+}
+
 
 export const upload_file_post = async (formData) => {
     try {
