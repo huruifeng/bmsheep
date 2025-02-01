@@ -1,9 +1,16 @@
 // TopBanner.jsx
-import { AppBar, Toolbar, Button } from '@mui/material';
+import {AppBar, Toolbar, Button, Menu, MenuItem} from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 import useAuthStore from "../../stores/authStore.js";
+import {Link} from "react-router-dom";
+import {useState} from "react";
 
 const TopBanner = () => {
     const {isAuthenticated, logout} = useAuthStore();
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
 
     return (
         <div id="top_banner">
@@ -19,9 +26,29 @@ const TopBanner = () => {
                     <div className="nav-container">
 
                         {isAuthenticated() ? (
-                            <Button color="inherit" onClick={logout}>
-                                登出
-                            </Button>
+                            <>
+                                <Button
+                                    color="inherit"
+                                    aria-controls="profile-menu"
+                                    aria-haspopup="true"
+                                    onClick={handleMenuOpen}
+                                  >
+                                    <PersonIcon className="person-icon" />
+                                  </Button>
+                                   <Menu
+                                      id="profile-menu"
+                                      anchorEl={anchorEl}
+                                      open={Boolean(anchorEl)}
+                                      onClose={handleMenuClose}
+                                    >
+                                      <MenuItem onClick={handleMenuClose} component={Link} to="/dashboard">
+                                        个人中心
+                                      </MenuItem>
+                                      <MenuItem onClick={logout} component={Link} to="/">
+                                        退出登录
+                                      </MenuItem>
+                                    </Menu>
+                            </>
                         ): (
                             <>
                                  <Button color="inherit" href="/register">
