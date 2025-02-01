@@ -22,51 +22,61 @@ const Login = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-     // const handleSubmit2 = async (e) => {
-     //    e.preventDefault();
-     //    const success = await login(formData.email, formData.password);
-     //    if (success) {
-     //      navigate("/dashboard");
-     //    } else {
-     //      setError("Invalid credentials");
-     //    }
-     //  };
-
-    const handleSubmit = async (e) => {
+     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        try {
-            // Perform login logic
-            const responseData = await login_post(formData);
-            const { access_token } = responseData;
-            const {message} = responseData;
-            if (responseData.success) {
-                // Login successful, redirect to the dashboard
-                setToken(access_token);
 
-                // Wait for Zustand state to update before accessing `user`
-                setTimeout(async () => {
-                    const updatedUser = useAuthStore.getState().user;
-                    console.log("Updated User:", updatedUser);
-
-                    if (updatedUser?.is_verified === false) {
-                        await send_code({email: updatedUser.email});
-                        navigate("/verify");
-                    } else {
-                        navigate("/dashboard");
-                    }
-                }, 1000); // Small delay to allow state update
-
-            } else {
-                    setError(message || "Login failed. Please check your credentials.");
+        const responseData = await login(formData.email, formData.password);
+        if (responseData.success) {
+          // Login successful, redirect to the dashboard
+            const updatedUser = useAuthStore.getState().user;
+            if(updatedUser.is_verified === false){
+                await send_code({email: updatedUser.email});
+                navigate("/verify");
+            }else{
+                navigate("/dashboard");
             }
-
-        } catch (err) {
-            setError("An error occurred.", err);
+        } else {
+          setError(responseData.message || "Invalid credentials");
         }
         setLoading(false);
-    };
+      };
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     setLoading(true);
+    //     setError(null);
+    //     try {
+    //         // Perform login logic
+    //         const responseData = await login_post(formData);
+    //         if (responseData.success) {
+    //             const { access_token } = responseData;
+    //             // Login successful, redirect to the dashboard
+    //             setToken(access_token);
+    //
+    //             // Wait for Zustand state to update before accessing `user`
+    //             setTimeout(async () => {
+    //                 const updatedUser = useAuthStore.getState().user;
+    //                 console.log("Updated User:", updatedUser);
+    //
+    //                 if (updatedUser?.is_verified === false) {
+    //                     await send_code({email: updatedUser.email});
+    //                     navigate("/verify");
+    //                 } else {
+    //                     navigate("/dashboard");
+    //                 }
+    //             }, 1000); // Small delay to allow state update
+    //
+    //         } else {
+    //                 setError(responseData.message || "Login failed. Please check your credentials.");
+    //         }
+    //
+    //     } catch (err) {
+    //         setError("An error occurred.", err);
+    //     }
+    //     setLoading(false);
+    // };
 
     return (
         <div className="login-container">

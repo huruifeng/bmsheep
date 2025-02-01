@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Card, Button, Alert, Spinner } from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 
@@ -16,12 +16,15 @@ const Verify = () => {
 
     const navigate = useNavigate();
 
-    const {user} = useAuthStore((state) => state);
+    const {user, getNewToken, setToken} = useAuthStore();
+    console.log(user);
 
-    if (!user) {
-        navigate("/login");
-        return null;
-    }
+    useEffect(() => {
+        if (user && user.is_verified) {
+            navigate("/dashboard");
+        }
+    }, []);
+
 
 
 
@@ -67,7 +70,17 @@ const Verify = () => {
             if (responseData.success) {
                 setSuccessMsg("Your email has been successfully verified.");
                 setCode(Array(6).fill(""));
+                setErrorMsg(null);
 
+                // update the token with is_verified=true
+                // const responseData = await getNewToken();
+                // if (!responseData.success) {
+                //     setErrorMsg(responseData.message || "Token refresh failed.");
+                // }else{
+                //     navigate("/dashboard");
+                // }
+
+                await setToken(responseData.access_token);
                 navigate("/dashboard");
 
             } else {
@@ -103,7 +116,7 @@ const Verify = () => {
                     <Card.Title className="text-center mb-4">Email Verification</Card.Title>
                     <Card.Text className="text-center mb-4">
                         Please verify your email address. <br/>
-                        The verification code has been sent to your email: {user.email}.
+                        The verification code has been sent to your email: {user?.email}.
                     </Card.Text>
 
                     {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}

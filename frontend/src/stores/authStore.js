@@ -7,37 +7,66 @@ const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
 
 const AUTH_URL = `${BASE_URL}/auth`;
 
-const useAuthStore = create((set) => ({
-  token: localStorage.getItem("token") || null,
-  user: localStorage.getItem("token") ? jwtDecode(localStorage.getItem("token")) : null,
+const storedToken = localStorage.getItem("token");
+const validToken = storedToken && storedToken !== "undefined" ? storedToken : null;
 
-  setToken: (access_token) => {
-    localStorage.setItem("token", access_token);
-    set({ token: access_token, user: jwtDecode(access_token) });
-  },
+
+const useAuthStore = create((set) => ({
+    token: validToken,
+    user: validToken ? jwtDecode(validToken) : null,
+
+    setToken: (access_token) => {
+        if (!access_token || access_token === "undefined") return;
+
+        localStorage.removeItem("token");
+        set({ token: null, user: null });
+
+        localStorage.setItem("token", access_token);
+        set({ token: access_token, user: jwtDecode(access_token) });
+    },
 
     isAuthenticated: () => !!localStorage.getItem("token"),
 
-  login: async (email, password) => {
-    try {
-      const response = await axios.post(`${AUTH_URL}/login`, { email, password });
-      console.log(response.data);
-      const {access_token} = response.data;
-      localStorage.setItem("token", access_token);
-      set({ token: access_token, user: jwtDecode(access_token) });
+    login: async (email, password) => {
+        try {
+            const response = await axios.post(`${AUTH_URL}/login`, { email, password });
+            // console.log(response.data);
 
-      return true;
+            if (response.data.success){
+                const {access_token} = response.data;
+                if (!access_token) return {success: false, message: "Error in getting access token."};
 
-    } catch (error) {
-      console.error("Login failed", error);
-      return false;
+                localStorage.setItem("token", access_token);
+                set({ token: access_token, user: jwtDecode(access_token) });
+
+                return response.data;
+            }else{
+                return response.data;
+            }
+
+        } catch (error) {
+            console.error("Login failed", error);
+            return {success: false, message: "Login error occurred."};
+        }
+    },
+
+    getNewToken: async (email) => {
+        try {
+            const response = await axios.post(`${AUTH_URL}/get_token`, { email });
+            const {access_token} = response.data;
+            localStorage.setItem("token", access_token);
+            set({ token: access_token, user: jwtDecode(access_token) });
+            return response.data;
+        } catch (error) {
+            console.error("Token refresh failed", error);
+            return {success: false, message: "Token refresh failed"};
+        }
+    },
+
+    logout: () => {
+        localStorage.removeItem("token");
+        set({ token: null, user: null });
     }
-  },
-
-  logout: () => {
-    localStorage.removeItem("token");
-    set({ token: null, user: null });
-  }
 }));
 
 export default useAuthStore;

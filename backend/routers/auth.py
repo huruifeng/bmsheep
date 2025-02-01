@@ -119,6 +119,21 @@ def register_user(user: UserCreate, session: SessionDep):
 
 
 ## ==========================================================================
+## get new token
+@router.post("/get_token")
+def get_token(request: dict, session: SessionDep):
+    email = request.get("email")
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        # raise HTTPException(status_code=401, detail="Invalid email or password")
+        return {"success":False,"message": "Invalid email"}
+
+    user_dict = {"full_name": user.full_name, "email": user.email, "is_admin": user.is_admin, "is_verified": user.is_verified}
+
+    token = create_access_token(user_dict)
+    return {"success":True, "message":"Token refreshed", "access_token": token,"token_type": "Bearer"}
+
+## ==========================================================================
 
 @router.post("/login")
 def login(request: dict, session: SessionDep):
@@ -199,7 +214,16 @@ def verify_email(request: dict, session: SessionDep):
     session.commit()
     session.refresh(user)
 
-    return {"success":True,"message": "Email verified successfully"}
+    user_dict = {"full_name": user.full_name, "email": user.email, "is_admin": user.is_admin, "is_verified": user.is_verified}
+
+    token = create_access_token(user_dict)
+    return {
+        "success":True,
+        "message": "Email verified successfully",
+        "access_token": token,
+        "token_type": "Bearer"
+    }
+
 
 
 
