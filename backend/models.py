@@ -9,7 +9,7 @@ import pytz
 tz = pytz.timezone("Asia/Shanghai")
 
 class UserBase(SQLModel):
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    email: EmailStr = Field(unique=True, index=True, max_length=255,primary_key=True)
     institution: Optional[str] = Field(default=None)
     full_name: Optional[str] = Field(default=None)
 
@@ -72,7 +72,7 @@ class JobBase(SQLModel):
 # Database model, database table inferred from class name
 class Job(JobBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False, ondelete="CASCADE")
+    owner_email: EmailStr = Field(foreign_key="user.email", nullable=False, ondelete="CASCADE")
     owner: User | None = Relationship(back_populates="jobs")
 
 # Properties to receive on item creation

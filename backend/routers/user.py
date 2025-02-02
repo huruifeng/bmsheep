@@ -17,12 +17,12 @@ router = APIRouter()
 def get_profile(email: str, user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
     if email != user.get("email"):
         raise HTTPException(status_code=403, detail="Unauthorized access")
-    user = session.exec(select(User).where(User.email == email)).first()
-    if not user:
+    user_i = session.exec(select(User).where(User.email == email)).first()
+    if not user_i:
         # raise HTTPException(status_code=400, detail="User not found")
         return {"success": False, "message": "User not found"}
 
-    user_dict = {"full_name": user.full_name, "email": user.email, "institution": user.institution, "is_admin": user.is_admin, "is_verified": user.is_verified}
+    user_dict = {"full_name": user_i.full_name, "email": user_i.email, "institution": user_i.institution, "is_admin": user_i.is_admin, "is_verified": user_i.is_verified}
 
     return {"success": True, "user": user_dict}
 

@@ -72,7 +72,10 @@ const ChangePassword = () => {
                 setSuccessMessage(null); // Clear success message in case of error
             }
         } catch (error) {
-            setError("Error updating password: " + error.response?.data?.message || "Unknown error");
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                useAuthStore.getState().logout();
+            }
+            setError("Error updating password: " + error.response?.data?.message || "Unknown error occurred");
             setSuccessMessage(null); // Clear success message in case of error
         } finally {
             setIsLoading(false);

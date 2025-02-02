@@ -1,17 +1,24 @@
 import os
 import json
+import uuid
 from datetime import datetime
 import pytz
+from sqlmodel import Session, select
 
-tz = pytz.timezone("Asia/Shanghai")
+from db import get_session
+from auth.auth_middleware import JWTBearer
 
-from fastapi import APIRouter
+from models import Job, User
+
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Request, File, UploadFile, Form, BackgroundTasks
 from fastapi.responses import JSONResponse, FileResponse
 
 from functions.run_script import run_varidnt, run_genimpute, run_chipdesignvcf, run_chipdesignpop
 
-router = APIRouter()
+tz = pytz.timezone("Asia/Shanghai")
+
+router = APIRouter(dependencies=[Depends(get_session),Depends(JWTBearer())])
 
 # Directory to save jobs
 JOB_DIR = "jobs"
@@ -57,10 +64,11 @@ async def upload_file(
 
 
 @router.post("/varident")
-async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),background_tasks: BackgroundTasks = None):
+async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),background_tasks: BackgroundTasks = None,
+                           user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
     print(f"Job ID: {job_id}, vcf file name: {input_vcf}")
+    email = user.get("email")
     try:
-
         # Define the working directory
         work_dir = os.path.join(JOB_DIR, job_id)
         if not os.path.exists(work_dir):
@@ -77,6 +85,22 @@ async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),b
         job_info["end_time"] = "NA"
         with open(f"{work_dir}/job_info.json", "w") as outfile:
             json.dump(job_info, outfile)
+
+        ## save job info to database
+        new_job = Job(
+            id=uuid.uuid4(),
+            owner_email=email,
+
+            job_id=job_id,
+            job_type="VarIdnt",
+            status="Running",
+            error="NA",
+            start_time = datetime.now(tz),
+            end_time = "NA",
+        )
+        session.add(new_job)
+        session.commit()
+        session.refresh(new_job)
 
         # Process the file
         # Schedule the script to run in the background
@@ -100,8 +124,10 @@ async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),b
         )
 
 @router.post("/genimpute")
-async def process_genimpute(job_id: str = Form(...), input_vcf: str = Form(...),background_tasks: BackgroundTasks = None):
+async def process_genimpute(job_id: str = Form(...), input_vcf: str = Form(...),background_tasks: BackgroundTasks = None,
+                           user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
     print(f"Job ID: {job_id}, vcf file name: {input_vcf}")
+    email = user.get("email")
     try:
         # Define the working directory
         work_dir = os.path.join(JOB_DIR, job_id)
@@ -119,6 +145,22 @@ async def process_genimpute(job_id: str = Form(...), input_vcf: str = Form(...),
         job_info["end_time"] = "NA"
         with open(f"{work_dir}/job_info.json", "w") as outfile:
             json.dump(job_info, outfile)
+
+        ## save job info to database
+        new_job = Job(
+            id=uuid.uuid4(),
+            owner_email=email,
+
+            job_id=job_id,
+            job_type="GenoImpute",
+            status="Running",
+            error="NA",
+            start_time = datetime.now(tz),
+            end_time = "NA",
+        )
+        session.add(new_job)
+        session.commit()
+        session.refresh(new_job)
 
         # Process the file
         # Schedule the script to run in the background
@@ -141,8 +183,10 @@ async def process_genimpute(job_id: str = Form(...), input_vcf: str = Form(...),
         )
 
 @router.post("/chipdesignvcf")
-async def process_chipdesignvcf(job_id: str = Form(...), input_vcf: str = Form(...),n_snp: int = Form(...),background_tasks: BackgroundTasks = None):
+async def process_chipdesignvcf(job_id: str = Form(...), input_vcf: str = Form(...),n_snp: int = Form(...),background_tasks: BackgroundTasks = None,
+                           user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
     print(f"Job ID: {job_id}, vcf file name: {input_vcf}, n_snp: {n_snp}")
+    email = user.get("email")
     try:
 
         # Define the working directory
@@ -161,6 +205,22 @@ async def process_chipdesignvcf(job_id: str = Form(...), input_vcf: str = Form(.
         job_info["end_time"] = "NA"
         with open(f"{work_dir}/job_info.json", "w") as outfile:
             json.dump(job_info, outfile)
+
+        ## save job info to database
+        new_job = Job(
+            id=uuid.uuid4(),
+            owner_email=email,
+
+            job_id=job_id,
+            job_type="ChipDesign_vcf",
+            status="Running",
+            error="NA",
+            start_time = datetime.now(tz),
+            end_time = "NA",
+        )
+        session.add(new_job)
+        session.commit()
+        session.refresh(new_job)
 
         # Process the file
         # Schedule the script to run in the background
@@ -184,8 +244,10 @@ async def process_chipdesignvcf(job_id: str = Form(...), input_vcf: str = Form(.
         )
 
 @router.post("/chipdesignpop")
-async def process_chipdesignpop(job_id: str = Form(...), population: str = Form(...), n_snp: int = Form(...), background_tasks: BackgroundTasks = None):
+async def process_chipdesignpop(job_id: str = Form(...), population: str = Form(...), n_snp: int = Form(...), background_tasks: BackgroundTasks = None,
+                           user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
     print(f"Job ID: {job_id}, population: {population}, n_snp: {n_snp}")
+    email = user.get("email")
     try:
 
         # Define the working directory
@@ -203,6 +265,22 @@ async def process_chipdesignpop(job_id: str = Form(...), population: str = Form(
         job_info["end_time"] = "NA"
         with open(f"{work_dir}/job_info.json", "w") as outfile:
             json.dump(job_info, outfile)
+
+        ## save job info to database
+        new_job = Job(
+            id=uuid.uuid4(),
+            owner_email=email,
+
+            job_id=job_id,
+            job_type="ChipDesign_pop",
+            status="Running",
+            error="NA",
+            start_time = datetime.now(tz),
+            end_time = "NA",
+        )
+        session.add(new_job)
+        session.commit()
+        session.refresh(new_job)
 
         # Process the file
         # Schedule the script to run in the background
@@ -226,15 +304,25 @@ async def process_chipdesignpop(job_id: str = Form(...), population: str = Form(
         )
 
 @router.post("/check_jobs")
-async def check_jobs_post(request:Request):
+async def check_jobs_post(request:Request, user: dict = Depends(JWTBearer()), session: Session = Depends(get_session)):
     data = await request.json()
-    user = data.get("username")
+    email = data.get("email")
+    if not email or email != user.get("email"):
+        raise HTTPException(status_code=403, detail="Unauthorized access")
 
     jobs = []
     ## Add your job checking logic here
     job_dir = 'jobs'
-    for job_id in os.listdir(job_dir):
-        if job_id.startswith('JOB'):
+
+    ## get job_id list from database
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        # raise HTTPException(status_code=400, detail="User not found")
+        return {"success": False, "message": "User not found"}
+    job_ids = [job.job_id for job in user.jobs]
+
+    for job_id in job_ids:
+        if os.path.exists(os.path.join(job_dir, job_id)):
             job_info_path = os.path.join(job_dir, job_id, "job_info.json")
             if not os.path.exists(job_info_path):
                 continue
@@ -258,3 +346,5 @@ async def download_results(job_id: str):
         media_type="application/zip",
         filename=f"{job_id}_results.zip"
     )
+
+

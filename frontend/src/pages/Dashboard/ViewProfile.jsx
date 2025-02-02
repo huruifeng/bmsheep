@@ -28,6 +28,9 @@ const ViewProfile = () => {
                     setError(responseData.message || "Failed to fetch profile.");
                 }
             } catch (err) {
+                if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                    useAuthStore.getState().logout();
+                }
                 setError("Error fetching profile:"+ err);
             }
         };

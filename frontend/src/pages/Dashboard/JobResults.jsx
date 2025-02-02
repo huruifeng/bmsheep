@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
 import {check_jobs_post, download_results} from "../../api.js";
 import {Spinner} from "react-bootstrap";
+import useAuthStore from "../../stores/authStore.js";
 
 const JobResults = () => {
   const [jobs, setJobs] = useState([]);
+  const user = useAuthStore((state) => state.user);
 
   const fetchJobs = async () => {
       try {
-        const userData = { username: 'all' };
+        const userData = { email: user.email };
         const data = await check_jobs_post(userData); // Replace with your backend endpoin
           // console.log(data);
             setJobs(data.jobs);
       } catch (error) {
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+              useAuthStore.getState().logout();
+          }
         console.error('Error fetching jobs:', error);
       }
     };
