@@ -96,7 +96,7 @@ async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),b
             status="Running",
             error="NA",
             start_time = datetime.now(tz),
-            end_time = "NA",
+            end_time = None,
         )
         session.add(new_job)
         session.commit()
@@ -156,7 +156,7 @@ async def process_genimpute(job_id: str = Form(...), input_vcf: str = Form(...),
             status="Running",
             error="NA",
             start_time = datetime.now(tz),
-            end_time = "NA",
+            end_time = None,
         )
         session.add(new_job)
         session.commit()
@@ -216,7 +216,7 @@ async def process_chipdesignvcf(job_id: str = Form(...), input_vcf: str = Form(.
             status="Running",
             error="NA",
             start_time = datetime.now(tz),
-            end_time = "NA",
+            end_time = None,
         )
         session.add(new_job)
         session.commit()
@@ -276,7 +276,7 @@ async def process_chipdesignpop(job_id: str = Form(...), population: str = Form(
             status="Running",
             error="NA",
             start_time = datetime.now(tz),
-            end_time = "NA",
+            end_time = None,
         )
         session.add(new_job)
         session.commit()

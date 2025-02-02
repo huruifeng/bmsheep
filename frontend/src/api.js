@@ -1,4 +1,5 @@
 import axios from "axios";
+import useAuthStore from "./stores/authStore.js";
 
 const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
 // const BASE_URL = "http://39.103.137.84:8000/api"; // Replace with your backend URL
@@ -99,6 +100,7 @@ export const upload_file_post = async (formData) => {
         const response = await axios.post(`${API_URL}/upload_file`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                'Authorization': `Bearer ${useAuthStore.getState().token}`,
             },
         });
         return response.data;
@@ -113,6 +115,7 @@ export const varident_post = async (formData) => {
     const response = await axios.post(`${API_URL}/varident`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${useAuthStore.getState().token}`,
       },
     });
     return response.data;
@@ -128,6 +131,7 @@ export const chipdesignvcf_post = async (formData) => {
     const response = await axios.post(`${API_URL}/chipdesignvcf`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${useAuthStore.getState().token}`,
       },
     });
     return response.data;
@@ -142,6 +146,7 @@ export const chipdesignpop_post = async (formData) => {
     const response = await axios.post(`${API_URL}/chipdesignpop`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${useAuthStore.getState().token}`,
       },
     });
     return response.data;
@@ -156,6 +161,7 @@ export const genimpute_post = async (formData) => {
     const response = await axios.post(`${API_URL}/genimpute`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${useAuthStore.getState().token}`,
       },
     });
     return response.data;
@@ -170,6 +176,7 @@ export const check_jobs_post = async (userData) => {
     const response = await axios.post(`${API_URL}/check_jobs`, userData,{
          headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${useAuthStore.getState().token}`,
         },
     });
     // console.log(response.data);
@@ -182,7 +189,12 @@ export const check_jobs_post = async (userData) => {
 
 export const download_results = async (jobId) => {
   try {
-    const response = await axios.get(`${API_URL}/download_results/${jobId}`, { responseType: 'blob' });
+    const response = await axios.get(`${API_URL}/download_results/${jobId}`, {
+        responseType: 'blob',
+        headers: {
+            'Authorization': `Bearer ${useAuthStore.getState().token}`,
+        },
+    });
     return response.data;
   } catch (error) {
     console.error("Error downloading results:", error);

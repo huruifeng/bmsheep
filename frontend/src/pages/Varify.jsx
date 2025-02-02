@@ -17,7 +17,7 @@ const Verify = () => {
     const navigate = useNavigate();
 
     const {user, getNewToken, setToken} = useAuthStore();
-    console.log(user);
+    // console.log(user);
 
     useEffect(() => {
         if (user && user.is_verified) {

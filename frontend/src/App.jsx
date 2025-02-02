@@ -15,7 +15,7 @@ import ChipDesignVCF from "./pages/ChipDesignVCF.jsx";
 import ChipDesignPop from "./pages/ChipDesignPop.jsx";
 import GenImpute from "./pages/GenImpute.jsx";
 import AstryAly from "./pages/AstryAly.jsx";
-// import Results from "./pages/Results.jsx";
+import Results from "./pages/Results.jsx";
 
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
@@ -32,11 +32,11 @@ function App() {
         <NavBar />
 
         <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/help" element={<Help />} />
 
-            {/* Public Routes */}
             <Route path="/register" element={<Register/>} />
             <Route path="/login" element={<Login/>} />
 
@@ -51,7 +51,7 @@ function App() {
             <Route path="/verify" element={<ProtectedRoute><Varify /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
-            {/*<Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />*/}
+            <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
 
 
             <Route path="*" element={<Home />} />

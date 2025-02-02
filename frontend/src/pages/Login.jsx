@@ -19,7 +19,11 @@ const Login = () => {
 
     // if user is logged in, redirect to dashboard
     if(user){
-        navigate("/dashboard");
+        if(user.is_verified === false){
+            navigate("/verify");
+        }else{
+            navigate("/home");
+        }
     }
 
     const handleChange = (e) => {
@@ -40,7 +44,7 @@ const Login = () => {
                 await send_code({email: updatedUser.email});
                 navigate("/verify");
             }else{
-                navigate("/dashboard");
+                navigate("/home");
             }
         } else {
           setError(responseData.message || "Invalid credentials");

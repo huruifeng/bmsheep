@@ -71,7 +71,7 @@ const Results = () => {
               <th>Submitted at</th>
               <th>Completed at</th>
               <th>Status</th>
-              <th>View</th>
+              {/*<th>View</th>*/}
               <th>Download</th>
           </tr>
           </thead>
@@ -85,16 +85,16 @@ const Results = () => {
                   <td>{job.start_time}</td>
                   <td>{job.end_time}</td>
                   <td>{job.status}</td>
-                  <td>
-                      {job.status === "Done" ? (
-                          <a className="btn btn-outline-success btn-sm" href={`/view/${job.job_id}`}>View</a>
-                      ) : job.status === "Error" ? (
-                         // Error state
-                            <p style={{color: '#9b0218'}}>Error</p>
-                      ): (
-                          <button className="btn btn-outline-secondary btn-sm" disabled>View</button>
-                      )}
-                  </td>
+                  {/*<td>*/}
+                  {/*    {job.status === "Done" ? (*/}
+                  {/*        <a className="btn btn-outline-success btn-sm" href={`/view/${job.job_id}`}>View</a>*/}
+                  {/*    ) : job.status === "Error" ? (*/}
+                  {/*       // Error state*/}
+                  {/*          <p style={{color: '#9b0218'}}>Error</p>*/}
+                  {/*    ): (*/}
+                  {/*        <button className="btn btn-outline-secondary btn-sm" disabled>View</button>*/}
+                  {/*    )}*/}
+                  {/*</td>*/}
                   <td>
                       {job.status === "Done" ? (
                           <button className="btn btn-outline-primary btn-sm" onClick={() => handleDownload(job.job_id)}>Download</button>

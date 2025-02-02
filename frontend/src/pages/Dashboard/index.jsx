@@ -4,13 +4,18 @@ import ViewProfile from "./ViewProfile";
 import ResetPassword from "./ResetPassword.jsx";
 import JobResults from "./JobResults";
 import "./Dashboard.css";
-import {useSearchParams} from "react-router-dom";
+import {Link, useSearchParams} from "react-router-dom";
+import useAuthStore from "../../stores/authStore.js";
 
 const Dashboard = () => {
     const [searchParams] = useSearchParams();
 
     const tab = searchParams.get("tab") || "profile"; // Default to "profile"
     const [activeTab, setActiveTab] = useState(tab);
+
+    const logout = () => {
+        useAuthStore.getState().logout();
+    };
 
     return (
         <div className="dashboard-container">
@@ -40,6 +45,13 @@ const Dashboard = () => {
                                 onClick={() => setActiveTab("job-results")}
                             >
                                 查看任务
+                            </ListGroup.Item>
+                            <ListGroup.Item
+                                className="text-danger"
+                                action
+                                onClick={logout}
+                            >
+                                退出登录
                             </ListGroup.Item>
                         </ListGroup>
                     </Card.Body>
