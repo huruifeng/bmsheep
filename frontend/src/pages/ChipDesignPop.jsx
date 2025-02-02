@@ -35,7 +35,7 @@ const ChipDesignPop = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted with values:', { jobIdPre, jobIdTxt, population, nSnp });
+    // console.log('Form submitted with values:', { jobIdPre, jobIdTxt, population, nSnp });
 
     // You can handle form submission logic here, e.g., sending data to the server
     setIsSubmitting(true);
