@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, ListGroup } from "react-bootstrap";
 import ViewProfile from "./ViewProfile";
 import ResetPassword from "./ResetPassword.jsx";
 import JobResults from "./JobResults";
 import "./Dashboard.css";
+import {useSearchParams} from "react-router-dom";
 
 const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState("profile");
+    const [searchParams] = useSearchParams();
+
+    const tab = searchParams.get("tab") || "profile"; // Default to "profile"
+    const [activeTab, setActiveTab] = useState(tab);
 
     return (
         <div className="dashboard-container">

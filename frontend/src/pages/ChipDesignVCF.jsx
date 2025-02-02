@@ -102,7 +102,8 @@ const ChipDesignVCF = () => {
 
         // 3. Navigate to the results page
         setTimeout(() => {
-          navigate(`/results`);
+          // navigate(`/results`);
+            navigate(`/dashboard?tab=profile`);
         }, 5000);
 
     } catch (error) {
