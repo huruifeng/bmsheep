@@ -1,6 +1,7 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css'
+import {useEffect, useState} from 'react';
 
 import NavBar from "./components/NavBar";
 import TopBanner from "./components/TopBanner";

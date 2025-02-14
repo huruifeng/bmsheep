@@ -3,7 +3,7 @@ import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
 const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
-// const BASE_URL = "http://39.103.137.84:8000/api"; // Replace with your backend URL
+// const BASE_URL = "http://39.103.137.84:8000"; // Replace with your backend URL
 
 const AUTH_URL = `${BASE_URL}/auth`;
 
