@@ -26,6 +26,17 @@ import ProtectedRoute from "./pages/ProtectedRoute.jsx";
 
 
 function App() {
+    useEffect(() => {
+        const handleUnload = () => {
+            sessionStorage.removeItem("token");
+        };
+
+        window.addEventListener("beforeunload", handleUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleUnload);
+        };
+    }, []);
   return (
     <Router>
         <TopBanner />

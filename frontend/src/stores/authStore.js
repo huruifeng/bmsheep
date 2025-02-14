@@ -7,7 +7,7 @@ const BASE_URL = "http://localhost:8000"; // Replace with your backend URL
 
 const AUTH_URL = `${BASE_URL}/auth`;
 
-const storedToken = localStorage.getItem("token");
+const storedToken = sessionStorage.getItem("token");
 const validToken = storedToken && storedToken !== "undefined" ? storedToken : null;
 
 
@@ -18,14 +18,14 @@ const useAuthStore = create((set) => ({
     setToken: (access_token) => {
         if (!access_token || access_token === "undefined") return;
 
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         set({ token: null, user: null });
 
-        localStorage.setItem("token", access_token);
+        sessionStorage.setItem("token", access_token);
         set({ token: access_token, user: jwtDecode(access_token) });
     },
 
-    isAuthenticated: () => !!localStorage.getItem("token"),
+    isAuthenticated: () => !!sessionStorage.getItem("token"),
 
     login: async (email, password) => {
         try {
@@ -36,7 +36,7 @@ const useAuthStore = create((set) => ({
                 const {access_token} = response.data;
                 if (!access_token) return {success: false, message: "Error in getting access token."};
 
-                localStorage.setItem("token", access_token);
+                sessionStorage.setItem("token", access_token);
                 set({ token: access_token, user: jwtDecode(access_token) });
 
                 return response.data;
@@ -54,7 +54,7 @@ const useAuthStore = create((set) => ({
         try {
             const response = await axios.post(`${AUTH_URL}/get_token`, { email });
             const {access_token} = response.data;
-            localStorage.setItem("token", access_token);
+            sessionStorage.setItem("token", access_token);
             set({ token: access_token, user: jwtDecode(access_token) });
             return response.data;
         } catch (error) {
@@ -64,7 +64,7 @@ const useAuthStore = create((set) => ({
     },
 
     logout: () => {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         set({ token: null, user: null });
     }
 }));
