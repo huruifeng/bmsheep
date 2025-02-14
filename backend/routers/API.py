@@ -73,7 +73,7 @@ async def process_varident(job_id: str = Form(...), input_vcf: str = Form(...),b
         work_dir = os.path.join(JOB_DIR, job_id)
         if not os.path.exists(work_dir):
             os.makedirs(work_dir)
-        input_vcf = os.path.join(work_dir, input_vcf)
+        # input_vcf = os.path.join(work_dir, input_vcf)
 
         ## initialize job info
         job_info = {"job_id": job_id}
@@ -133,7 +133,7 @@ async def process_genimpute(job_id: str = Form(...), input_vcf: str = Form(...),
         work_dir = os.path.join(JOB_DIR, job_id)
         if not os.path.exists(work_dir):
             os.makedirs(work_dir)
-        input_vcf = os.path.join(work_dir, input_vcf)
+        # input_vcf = os.path.join(work_dir, input_vcf)
 
         ## initialize job info
         job_info = {"job_id": job_id}
@@ -193,7 +193,7 @@ async def process_chipdesignvcf(job_id: str = Form(...), input_vcf: str = Form(.
         work_dir = os.path.join(JOB_DIR, job_id)
         if not os.path.exists(work_dir):
             os.makedirs(work_dir)
-        input_vcf = os.path.join(work_dir, input_vcf)
+        # input_vcf = os.path.join(work_dir, input_vcf)
 
         ## initialize job info
         job_info = {"job_id": job_id}
