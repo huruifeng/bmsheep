@@ -50,6 +50,8 @@ def run_genimpute(work_dir,vcf_file):
     print("==============================================================")
     print("GenImpute - Running job:", work_dir)
     job_info = json.load(open(f"{work_dir}/job_info.json"))
+
+
     try:
         cmd_str = " ".join(["python", "jobs/test.py"])
         example_cmd = ("perl /mnt/chulaoshi/design_chip/variaty_identification/add_phase2/web_design/genotype_imputation/genotype_imputation.pl "
@@ -58,10 +60,11 @@ def run_genimpute(work_dir,vcf_file):
          "-o out.test")
         
         cmd_str = (
+            f"cd {work_dir} && "
             f"perl /mnt/chulaoshi/design_chip/variaty_identification/add_phase2/web_design/genotype_imputation/genotype_imputation.pl "
-            f"-i {work_dir}/{vcf_file} "
+            f"-i {vcf_file} "
             f"-b /mnt/chulaoshi/design_chip/variaty_identification/add_phase2/web_design/genotype_imputation/Background_SNPs "
-            f"-o {work_dir}/out.{vcf_file}")
+            f"-o out.{vcf_file}")
         print(cmd_str)
         subprocess.run(cmd_str, shell=True)
 
@@ -72,6 +75,8 @@ def run_genimpute(work_dir,vcf_file):
         job_info["status"] = "Error"
         job_info["error"] = str(e)
         job_info["end_time"] = datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
+
+
 
     with open(f"{work_dir}/job_info.json", "w") as outfile:
         json.dump(job_info, outfile)
