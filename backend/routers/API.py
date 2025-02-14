@@ -320,6 +320,7 @@ async def check_jobs_post(request:Request, user: dict = Depends(JWTBearer()), se
         # raise HTTPException(status_code=400, detail="User not found")
         return {"success": False, "message": "User not found"}
     job_ids = [job.job_id for job in user.jobs]
+    job_ids = job_ids[::-1]
 
     for job_id in job_ids:
         if os.path.exists(os.path.join(job_dir, job_id)):
